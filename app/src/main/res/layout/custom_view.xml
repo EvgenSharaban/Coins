@@ -6,17 +6,17 @@
     android:layout_height="wrap_content"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <com.example.customviewwithoutcompose.widgets.CustomRhombusView
-        android:id="@+id/crvRank"
+    <com.example.customviewwithoutcompose.widgets.RhombusView
+        android:id="@+id/rank"
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_marginStart="32dp"
         android:elevation="4dp"
-        app:backgroundRhombusColor="@color/white"
+        app:backColor="@color/orange"
+        android:text="1"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:textRhombus="1"
-        app:textRhombusSize="24" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
@@ -74,14 +74,14 @@
             app:layout_constraintEnd_toEndOf="@id/mcvLogo"
             app:layout_constraintTop_toBottomOf="@id/mcvLogo" />
 
-        <com.example.customviewwithoutcompose.widgets.CustomRhombusView
-            android:id="@+id/crvShortName"
+        <com.example.customviewwithoutcompose.widgets.RhombusView
+            android:id="@+id/shortName"
             android:layout_width="64dp"
             android:layout_height="56dp"
-            app:backgroundRhombusColor="@color/white"
+            android:text="BTC"
+            app:backColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:textRhombus="BTC" />
+            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </merge>

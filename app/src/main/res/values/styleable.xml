@@ -5,12 +5,6 @@
         <attr name="backColor" format="color" />
     </declare-styleable>
 
-    <declare-styleable name="CustomRhombusView">
-        <attr name="textRhombus" format="string" />
-        <attr name="textRhombusSize" format="integer" />
-        <attr name="backgroundRhombusColor" format="color" />
-    </declare-styleable>
-
     <declare-styleable name="CustomView">
         <attr name="rankText" format="string" />
         <attr name="rankTextSize" format="integer" />

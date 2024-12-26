@@ -68,7 +68,7 @@ class CustomView (
 
     private fun applyAttrs(attributes: TypedArray) {
         rankText = attributes.getString(R.styleable.CustomView_rankText).orEmpty()
-        rankTextSize = attributes.getInteger(R.styleable.CustomView_rankTextSize, 8)
+        rankTextSize = attributes.getInteger(R.styleable.CustomView_rankTextSize, 16)
         rankBackgroundColor = attributes.getColor(R.styleable.CustomView_rankBackgroundColor, 0)
 
         nameText = attributes.getString(R.styleable.CustomView_nameText).orEmpty()
@@ -83,39 +83,38 @@ class CustomView (
     }
 
     private fun updateView() {
-        binding.crvRank.apply {
-            textRhombus = rankText
-            textRhombusSize = rankTextSize
-            backgroundRhombusColor = rankBackgroundColor
+        binding.rank.apply {
+            text = rankText
+            textSize = rankTextSize.toFloat()
+            backColor = rankBackgroundColor
         }
 
         binding.tvName.text = nameText
         binding.logo.setImageResource(logo)
         binding.tvCreationDate.text = creationDate
 
-        binding.crvShortName.apply {
-            textRhombus = shortNameText
-            textRhombusSize = shortNameTextSize
-            backgroundRhombusColor = shortNameBackgroundColor
+        binding.shortName.apply {
+            text = shortNameText
+            textSize = shortNameTextSize.toFloat()
+            backColor = shortNameBackgroundColor
         }
     }
 
     private fun updateView(model: CustomViewModel) {
-        binding.crvRank.apply {
-            textRhombus = model.rankText
-            textRhombusSize = model.rankTextSize
-            backgroundRhombusColor = model.rankBackgroundColor
+        binding.rank.apply {
+            text = model.rankText
+            textSize = model.rankTextSize.toFloat()
+            backColor = model.rankBackgroundColor
         }
 
         binding.tvName.text = model.nameText
         binding.logo.setImageResource(model.logo)
         binding.tvCreationDate.text = model.creationDate
 
-        binding.crvShortName.apply {
-            textRhombus = model.shortNameText
-            textRhombusSize = model.shortNameTextSize
-            backgroundRhombusColor = model.shortNameBackgroundColor
+        binding.shortName.apply {
+            text = model.shortNameText
+            textSize = model.shortNameTextSize.toFloat()
+            backColor = model.shortNameBackgroundColor
         }
     }
-
 }

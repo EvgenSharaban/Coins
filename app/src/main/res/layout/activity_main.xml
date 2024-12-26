@@ -24,12 +24,11 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         app:rankText="2"
-
         app:nameText="gggg"
         app:logo="@drawable/case_detail_sample"
         app:creationDate="Since 2024"
         app:shortNameText="BTC"
-
+app:shortNameBackgroundColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv" />
