@@ -24,10 +24,11 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         app:creationDate="Since 2024"
+        app:descriptionText="Description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvHallo"
-        app:logo="@drawable/case_detail_sample"
+        app:logo="@drawable/ic_avatar_test_user"
         app:nameText="gggg"
         app:rankText="2"
         app:shortNameText="VVV" />

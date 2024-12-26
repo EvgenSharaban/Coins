@@ -11,6 +11,7 @@
         <attr name="rankBackgroundColor" format="color" />
 
         <attr name="nameText" format="string" />
+        <attr name="descriptionText" format="string" />
         <attr name="logo" format="reference" />
         <attr name="creationDate" format="string" />
 

@@ -11,6 +11,7 @@ data class CustomViewModel(
     @ColorInt val rankBackgroundColor: Int,
 
     val nameText: String,
+    val descriptionText: String,
     val creationDate: String,
     @DrawableRes val logo: Int,
 
@@ -23,6 +24,7 @@ data class CustomViewModel(
 
         val DEFAULT = CustomViewModel(
             rankText = "",
+            descriptionText = "",
             rankTextAppearance = 0,
             rankBackgroundColor = 0,
             nameText = "",

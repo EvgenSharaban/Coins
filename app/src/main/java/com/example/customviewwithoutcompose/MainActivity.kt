@@ -31,11 +31,21 @@ class MainActivity : AppCompatActivity() {
             rankTextAppearance = R.style.RankTextAppearance,
             rankBackgroundColor = getColor(R.color.yellow),
             nameText = "Bitcoin",
+            descriptionText = "Description",
             creationDate = "Since 2009",
             logo = R.drawable.ic_avatar_test_user,
             shortNameText = "BTC",
             shortNameTextAppearance = R.style.ShortNameTextAppearance,
             shortNameBackgroundColor = getColor(R.color.white)
         )
+
+        setListeners()
+    }
+
+    private fun setListeners() {
+        binding.customView.setListener {
+            binding.customView.descriptionText = "Description view clicked"
+            binding.customView.logo = R.drawable.case_detail_sample
+        }
     }
 }
