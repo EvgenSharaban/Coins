@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="RhombusView">
+        <attr name="backColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomRhombusView">
+        <attr name="textRhombus" format="string" />
+        <attr name="textRhombusSize" format="integer" />
+        <attr name="backgroundRhombusColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomView">
+        <attr name="rankText" format="string" />
+        <attr name="rankTextSize" format="integer" />
+        <attr name="rankBackgroundColor" format="color" />
+
+        <attr name="nameText" format="string" />
+        <attr name="logo" format="reference" />
+        <attr name="creationDate" format="string" />
+
+        <attr name="shortNameText" format="string" />
+        <attr name="shortNameTextSize" format="integer" />
+        <attr name="shortNameBackgroundColor" format="color" />
+    </declare-styleable>
+    
+    <attr name="customViewStyle" format="reference" />
+
+</resources>
