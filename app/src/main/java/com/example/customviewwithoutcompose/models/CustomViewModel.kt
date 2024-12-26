@@ -2,19 +2,20 @@ package com.example.customviewwithoutcompose.models
 
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
+import androidx.annotation.StyleRes
 
 data class CustomViewModel(
 
     val rankText: String,
-    val rankTextSize: Int,
+    @StyleRes val rankTextAppearance: Int,
     @ColorInt val rankBackgroundColor: Int,
 
     val nameText: String,
-    val creationDate:String,
+    val creationDate: String,
     @DrawableRes val logo: Int,
 
     val shortNameText: String,
-    val shortNameTextSize: Int,
+    @StyleRes val shortNameTextAppearance: Int,
     @ColorInt val shortNameBackgroundColor: Int
 ) {
 
@@ -22,13 +23,13 @@ data class CustomViewModel(
 
         val DEFAULT = CustomViewModel(
             rankText = "",
-            rankTextSize = 0,
+            rankTextAppearance = 0,
             rankBackgroundColor = 0,
             nameText = "",
             creationDate = "",
             logo = 0,
             shortNameText = "",
-            shortNameTextSize = 0,
+            shortNameTextAppearance = 0,
             shortNameBackgroundColor = 0
         )
     }

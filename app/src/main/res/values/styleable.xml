@@ -7,7 +7,7 @@
 
     <declare-styleable name="CustomView">
         <attr name="rankText" format="string" />
-        <attr name="rankTextSize" format="integer" />
+        <attr name="rankTextAppearance" format="reference" />
         <attr name="rankBackgroundColor" format="color" />
 
         <attr name="nameText" format="string" />
@@ -15,10 +15,10 @@
         <attr name="creationDate" format="string" />
 
         <attr name="shortNameText" format="string" />
-        <attr name="shortNameTextSize" format="integer" />
+        <attr name="shortNameTextAppearance" format="reference" />
         <attr name="shortNameBackgroundColor" format="color" />
     </declare-styleable>
-    
+
     <attr name="customViewStyle" format="reference" />
 
 </resources>

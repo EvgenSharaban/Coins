@@ -11,37 +11,43 @@ import com.example.customviewwithoutcompose.databinding.CustomViewBinding
 import com.example.customviewwithoutcompose.models.CustomViewModel
 import kotlin.properties.Delegates
 
-class CustomView (
+class CustomView(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int): this(context, attrs, defStyleAttr, R.style.DefaultCustomViewStyle)
-    constructor(context: Context, attrs: AttributeSet?): this(context, attrs, R.attr.customViewStyle)
-    constructor(context: Context): this(context, null)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : this(context, attrs, defStyleAttr, R.style.DefaultCustomViewStyle)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, R.attr.customViewStyle)
+    constructor(context: Context) : this(context, null)
 
     private var binding: CustomViewBinding by Delegates.notNull()
 
     @Suppress("MemberVisibilityCanBePrivate")
     var rankText: String = ""
+
     @Suppress("MemberVisibilityCanBePrivate")
-    var rankTextSize: Int = 0
+    var rankTextAppearance: Int = 0
+
     @ColorInt
     var rankBackgroundColor: Int = 0
 
     @Suppress("MemberVisibilityCanBePrivate")
     var nameText: String = ""
+
     @Suppress("MemberVisibilityCanBePrivate")
     var creationDate: String = ""
+
     @DrawableRes
     var logo: Int = 0
 
     @Suppress("MemberVisibilityCanBePrivate")
     var shortNameText: String = ""
+
     @Suppress("MemberVisibilityCanBePrivate")
-    var shortNameTextSize: Int = 0
+    var shortNameTextAppearance: Int = 0
+
     @ColorInt
     var shortNameBackgroundColor: Int = 0
 
@@ -68,7 +74,7 @@ class CustomView (
 
     private fun applyAttrs(attributes: TypedArray) {
         rankText = attributes.getString(R.styleable.CustomView_rankText).orEmpty()
-        rankTextSize = attributes.getInteger(R.styleable.CustomView_rankTextSize, 16)
+        rankTextAppearance = attributes.getResourceId(R.styleable.CustomView_rankTextAppearance, 0)
         rankBackgroundColor = attributes.getColor(R.styleable.CustomView_rankBackgroundColor, 0)
 
         nameText = attributes.getString(R.styleable.CustomView_nameText).orEmpty()
@@ -76,7 +82,7 @@ class CustomView (
         logo = attributes.getResourceId(R.styleable.CustomView_logo, 0)
 
         shortNameText = attributes.getString(R.styleable.CustomView_shortNameText).orEmpty()
-        shortNameTextSize = attributes.getInteger(R.styleable.CustomView_shortNameTextSize, 8)
+        shortNameTextAppearance = attributes.getResourceId(R.styleable.CustomView_shortNameTextAppearance, 0)
         shortNameBackgroundColor = attributes.getColor(R.styleable.CustomView_shortNameBackgroundColor, 0)
 
         updateView()
@@ -85,7 +91,7 @@ class CustomView (
     private fun updateView() {
         binding.rank.apply {
             text = rankText
-            textSize = rankTextSize.toFloat()
+            setTextAppearance(rankTextAppearance)
             backColor = rankBackgroundColor
         }
 
@@ -95,7 +101,7 @@ class CustomView (
 
         binding.shortName.apply {
             text = shortNameText
-            textSize = shortNameTextSize.toFloat()
+            setTextAppearance(shortNameTextAppearance)
             backColor = shortNameBackgroundColor
         }
     }
@@ -103,7 +109,7 @@ class CustomView (
     private fun updateView(model: CustomViewModel) {
         binding.rank.apply {
             text = model.rankText
-            textSize = model.rankTextSize.toFloat()
+            setTextAppearance(model.rankTextAppearance)
             backColor = model.rankBackgroundColor
         }
 
@@ -113,7 +119,7 @@ class CustomView (
 
         binding.shortName.apply {
             text = model.shortNameText
-            textSize = model.shortNameTextSize.toFloat()
+            setTextAppearance(model.shortNameTextAppearance)
             backColor = model.shortNameBackgroundColor
         }
     }

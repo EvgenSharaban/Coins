@@ -3,7 +3,6 @@ package com.example.customviewwithoutcompose
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
@@ -29,13 +28,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.customView.customViewModel = CustomViewModel(
             rankText = "3",
-            rankTextSize = 30,
+            rankTextAppearance = R.style.RankTextAppearance,
             rankBackgroundColor = getColor(R.color.yellow),
             nameText = "Bitcoin",
             creationDate = "Since 2009",
             logo = R.drawable.ic_avatar_test_user,
-            shortNameText = "VVV",
-            shortNameTextSize = 18,
+            shortNameText = "BTC",
+            shortNameTextAppearance = R.style.ShortNameTextAppearance,
             shortNameBackgroundColor = getColor(R.color.white)
         )
     }
