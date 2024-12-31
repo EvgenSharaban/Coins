@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.widgets
+package com.example.customviewwithoutcompose.core.widgets
 
 import android.content.Context
 import android.graphics.Canvas

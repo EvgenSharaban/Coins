@@ -1,10 +1,10 @@
-package com.example.customviewwithoutcompose.models
+package com.example.customviewwithoutcompose.presentation.uimodels
 
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StyleRes
 
-data class CustomViewModel(
+data class ModelForCustomView(
 
     val rankText: String,
     @StyleRes val rankTextAppearance: Int,
@@ -22,7 +22,7 @@ data class CustomViewModel(
 
     companion object {
 
-        val DEFAULT = CustomViewModel(
+        val DEFAULT = ModelForCustomView(
             rankText = "",
             descriptionText = "",
             rankTextAppearance = 0,

@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.widgets
+package com.example.customviewwithoutcompose.core.widgets
 
 import android.content.Context
 import android.content.res.TypedArray
@@ -10,7 +10,7 @@ import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.models.CustomViewModel
+import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
 import kotlin.properties.Delegates
 
 typealias ClickListener = () -> Unit
@@ -67,7 +67,7 @@ class CustomView(
     @ColorInt
     var shortNameBackgroundColor: Int = 0
 
-    var customViewModel: CustomViewModel = CustomViewModel.DEFAULT
+    var modelForCustomView: ModelForCustomView = ModelForCustomView.DEFAULT
         set(value) {
             field = value
             updateView(value)
@@ -144,7 +144,7 @@ class CustomView(
         }
     }
 
-    private fun updateView(model: CustomViewModel) {
+    private fun updateView(model: ModelForCustomView) {
         binding.rank.apply {
             text = model.rankText
             setTextAppearance(model.rankTextAppearance)
