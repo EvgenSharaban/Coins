@@ -12,11 +12,11 @@
         android:layout_height="72dp"
         android:layout_marginStart="32dp"
         android:elevation="4dp"
-        android:text="1"
         android:textSize="24sp"
         app:backColor="@color/orange"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
@@ -37,11 +37,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Bitcoin"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="@id/mcvLogo"
             app:layout_constraintStart_toStartOf="@id/mcvLogo"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Bitcoin" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/mcvLogo"
@@ -70,11 +70,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
-            android:text="Since 2009"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/mcvLogo"
             app:layout_constraintStart_toStartOf="@id/mcvLogo"
-            app:layout_constraintTop_toBottomOf="@id/mcvLogo" />
+            app:layout_constraintTop_toBottomOf="@id/mcvLogo"
+            tools:text="Since 2009" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDescription"
@@ -95,10 +95,10 @@
             android:id="@+id/shortName"
             android:layout_width="64dp"
             android:layout_height="56dp"
-            android:text="BTC"
             app:backColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="BTC" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

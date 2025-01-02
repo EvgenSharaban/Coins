@@ -1,15 +1,20 @@
 package com.example.customviewwithoutcompose.presentation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -45,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 //            shortNameBackgroundColor = getColor(R.color.white)
 //        )
 
-        viewModel.coinLD.observe(this) { coin ->
+        viewModel.coinModel.observe(this) { coin ->
             if (coin != null) {
                 binding.customView.modelForCustomView = ModelForCustomView(
                     rankText = coin.rank.toString(),
@@ -59,10 +64,21 @@ class MainActivity : AppCompatActivity() {
                     shortNameTextAppearance = R.style.ShortNameTextAppearance,
                     shortNameBackgroundColor = getColor(R.color.white)
                 )
+                binding.customView.descriptionText = coin.description ?: ""
             }
         }
 
 //        setListeners()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        lifecycleScope.launch(Dispatchers.Main.immediate) {
+            viewModel.event.collectLatest { message ->
+                showToast(message)
+            }
+        }
     }
 
     private fun setListeners() {
@@ -70,5 +86,9 @@ class MainActivity : AppCompatActivity() {
             binding.customView.descriptionText = "Description view clicked"
             binding.customView.logo = R.drawable.case_detail_sample
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
     }
 }
