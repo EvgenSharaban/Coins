@@ -60,6 +60,10 @@ dependencies {
     // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+
+    // coil
+    implementation(libs.coil)
+
 }
 
 // Allow references to generated code (hilt)

@@ -1,6 +1,7 @@
 package com.example.customviewwithoutcompose.core.networking
 
 import android.util.Log
+import com.example.customviewwithoutcompose.data.network.entities.mappers.FromEntityToDomainMapper
 import com.example.customviewwithoutcompose.utils.TAG
 import retrofit2.Response
 
@@ -41,6 +42,18 @@ private suspend fun <T> safeApiCallInternalList(
     } catch (e: Throwable) {
         Log.e(TAG, "error during request: $e", e)
         Result.failure(e)
+    }
+}
+
+fun <R, T> Result<T>.toDomain(mapper: FromEntityToDomainMapper<T, R>): Result<R> {
+    return map { value ->
+        mapper.mapToDomainModel(value)
+    }
+}
+
+fun <R, T> Result<List<T>>.toDomainList(mapper: FromEntityToDomainMapper<T, R>): Result<List<R>> {
+    return map { value ->
+        mapper.mapToDomainList(value)
     }
 }
 

@@ -8,9 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
-import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
+import com.example.customviewwithoutcompose.utils.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -20,12 +19,15 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
     private val viewModel: MainActivityViewModel by viewModels()
+    private val coinsAdapter = CoinsListAdapter()
+    private lateinit var coinsDecorator: ItemDecoratorCoinsList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+        coinsDecorator = ItemDecoratorCoinsList(bottomValueInDPLastItem = 56)
 
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
@@ -37,36 +39,30 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-//        binding.customView.modelForCustomView = ModelForCustomView(
-//            rankText = "3",
-//            rankTextAppearance = R.style.RankTextAppearance,
-//            rankBackgroundColor = getColor(R.color.yellow),
-//            nameText = "Bitcoin",
-//            descriptionText = "Description",
-//            creationDate = "Since 2009",
-//            logo = R.drawable.ic_avatar_test_user,
-//            shortNameText = "BTC",
-//            shortNameTextAppearance = R.style.ShortNameTextAppearance,
-//            shortNameBackgroundColor = getColor(R.color.white)
-//        )
-
-        viewModel.coinModel.observe(this) { coin ->
-            if (coin != null) {
-                binding.customView.modelForCustomView = ModelForCustomView(
-                    rankText = coin.rank.toString(),
-                    rankTextAppearance = R.style.RankTextAppearance,
-                    rankBackgroundColor = getColor(R.color.yellow),
-                    nameText = coin.name ?: "",
-                    descriptionText = coin.description ?: "",
-                    creationDate = "Since 2009",
-                    logo = R.drawable.ic_avatar_test_user,
-                    shortNameText = coin.symbol ?: "",
-                    shortNameTextAppearance = R.style.ShortNameTextAppearance,
-                    shortNameBackgroundColor = getColor(R.color.white)
-                )
-                binding.customView.descriptionText = coin.description ?: ""
-            }
+        binding.rvCoins.apply {
+            adapter = coinsAdapter
+            addItemDecoration(coinsDecorator)
         }
+
+        binding.root.updatePadding(true, false)
+
+//        viewModel.coinModel.observe(this) { coin ->
+//            if (coin != null) {
+//                binding.customView.modelForCustomView = ModelForCustomView(
+//                    rankText = coin.rank.toString(),
+//                    rankTextAppearance = R.style.RankTextAppearance,
+//                    rankBackgroundColor = getColor(R.color.yellow),
+//                    nameText = coin.name ?: "",
+//                    descriptionText = coin.description ?: "",
+//                    creationDate = "Since 2009",
+//                    logo = R.drawable.ic_avatar_test_user,
+//                    shortNameText = coin.symbol ?: "",
+//                    shortNameTextAppearance = R.style.ShortNameTextAppearance,
+//                    shortNameBackgroundColor = getColor(R.color.white)
+//                )
+//                binding.customView.descriptionText = coin.description ?: ""
+//            }
+//        }
 
 //        setListeners()
     }
@@ -79,14 +75,20 @@ class MainActivity : AppCompatActivity() {
                 showToast(message)
             }
         }
-    }
 
-    private fun setListeners() {
-        binding.customView.setListener {
-            binding.customView.descriptionText = "Description view clicked"
-            binding.customView.logo = R.drawable.case_detail_sample
+        lifecycleScope.launch {
+            viewModel.coinsList.collectLatest { list ->
+                coinsAdapter.submitList(list)
+            }
         }
     }
+
+//    private fun setListeners() {
+//        binding.customView.setListener {
+//            binding.customView.descriptionText = "Description view clicked"
+//            binding.customView.logo = R.drawable.case_detail_sample
+//        }
+//    }
 
     private fun showToast(message: String) {
         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()

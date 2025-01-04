@@ -8,9 +8,10 @@ import android.util.AttributeSet
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
+import com.example.customviewwithoutcompose.domain.models.ModelForCustomView
 import kotlin.properties.Delegates
 
 typealias ClickListener = () -> Unit
@@ -67,6 +68,7 @@ class CustomView(
     @ColorInt
     var shortNameBackgroundColor: Int = 0
 
+    // ability to set model from code
     var modelForCustomView: ModelForCustomView = ModelForCustomView.DEFAULT
         set(value) {
             field = value
@@ -96,6 +98,7 @@ class CustomView(
         logo = savedState.logo ?: 0
     }
 
+    // to using from activity class
     fun setListener(listener: ClickListener) {
         this.listener = listener
     }
@@ -145,21 +148,20 @@ class CustomView(
     }
 
     private fun updateView(model: ModelForCustomView) {
+        val rank = model.rank.toString()
         binding.rank.apply {
-            text = model.rankText
+            text = rank
             setTextAppearance(model.rankTextAppearance)
-            backColor = model.rankBackgroundColor
         }
 
         binding.tvName.text = model.nameText
         binding.tvDescription.text = model.descriptionText
-        binding.logo.setImageResource(model.logo)
+        binding.logo.load(model.logo)
         binding.tvCreationDate.text = model.creationDate
 
         binding.shortName.apply {
             text = model.shortNameText
             setTextAppearance(model.shortNameTextAppearance)
-            backColor = model.shortNameBackgroundColor
         }
     }
 

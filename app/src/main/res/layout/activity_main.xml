@@ -11,24 +11,23 @@
         android:id="@+id/tvHallo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="32dp"
+        android:layout_marginTop="32dp"
         android:text="@string/coins_list"
-        app:layout_constraintBottom_toTopOf="@id/customView"
+        app:layout_constraintBottom_toTopOf="@id/rvCoins"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.example.customviewwithoutcompose.core.widgets.CustomView
-        android:id="@+id/customView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-
-        app:descriptionText="Description"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCoins"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="8dp"
+        android:orientation="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvHallo"
-        app:logo="@drawable/ic_avatar_test_user"
-        app:shortNameText="VVV" />
+        app:layout_constraintTop_toBottomOf="@id/tvHallo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,17 +5,18 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
-import com.example.customviewwithoutcompose.data.network.entities.CoinEntity
+import com.example.customviewwithoutcompose.domain.models.ModelForCustomView
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.utils.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +26,7 @@ class MainActivityViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    val coinModel = MutableLiveData<CoinEntity>()
+    val coinsList = MutableStateFlow<List<ModelForCustomView>>(emptyList())
 
     private val _event = Channel<String>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
@@ -35,24 +36,23 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun getCoins() {
-        if (hasInternetConnection()) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            if (hasInternetConnection()) {
                 coinsRepository.getCoins().onSuccess { coins ->
                     val list = coins
-                        .filter { it.rank != null && it.rank > 0 && it.isActive == true && it.type == "coin" }
+                        .filter { it.rank > 0 && it.isActive == true && it.type == "coin" }
                         .sortedBy { it.rank }
-                    list.take(1).forEach { coin ->
-                        if (coin.id != null) {
-                            coinsRepository.getCoinById(coin.id).onSuccess { item ->
-                                coinModel.value = item
-                                Log.d(TAG, "${coin.name}: $item")
+                    list.take(10).forEach { coin ->
+                        coinsRepository.getCoinById(coin.id).onSuccess { item ->
+                            coinsList.update {
+                                it.toMutableList().apply {
+                                    add(item)
+                                }
                             }
                         }
                     }
                 }
-            }
-        } else {
-            viewModelScope.launch {
+            } else {
                 val message = context.getString(R.string.no_internet_connection)
                 _event.trySend(message)
                 Log.d(TAG, message)

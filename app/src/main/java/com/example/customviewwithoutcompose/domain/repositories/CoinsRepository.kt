@@ -1,10 +1,10 @@
 package com.example.customviewwithoutcompose.domain.repositories
 
-import com.example.customviewwithoutcompose.data.network.entities.CoinEntity
+import com.example.customviewwithoutcompose.domain.models.ModelForCustomView
 
 interface CoinsRepository {
 
-    suspend fun getCoins(): Result<List<CoinEntity>>
+    suspend fun getCoins(): Result<List<ModelForCustomView>>
 
-    suspend fun getCoinById(id: String): Result<CoinEntity>
+    suspend fun getCoinById(id: String): Result<ModelForCustomView>
 }
