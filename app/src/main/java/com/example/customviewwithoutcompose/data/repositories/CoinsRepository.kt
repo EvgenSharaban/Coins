@@ -21,6 +21,12 @@ class CoinsRepositoryImpl @Inject constructor(
             apiService.getCoins()
         }
             .toDomainList(CoinMapper)
+            .mapCatching { coins ->
+                coins
+                    .filter { it.rank > 0 && it.isActive == true && it.type == "coin" }
+                    .sortedBy { it.rank }
+                    .take(10)
+            }
             .onSuccess { coins ->
                 Log.d(TAG, "getCoins: success, size = ${coins.size}")
             }

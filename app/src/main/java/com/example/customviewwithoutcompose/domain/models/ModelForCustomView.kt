@@ -11,7 +11,7 @@ data class ModelForCustomView(
     val nameText: String,
     val descriptionText: String,
     val creationDate: String,
-    var logo: String,
+    val logo: String,
 
     val shortNameText: String,
     @StyleRes val shortNameTextAppearance: Int = R.style.ShortNameTextAppearance,

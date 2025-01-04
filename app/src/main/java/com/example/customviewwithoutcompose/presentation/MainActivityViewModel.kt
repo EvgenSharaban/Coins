@@ -41,12 +41,11 @@ class MainActivityViewModel @Inject constructor(
                 coinsRepository.getCoins().onSuccess { coins ->
                     val outList = mutableListOf<ModelForCustomView>()
                     coins
-                        .filter { it.rank > 0 && it.isActive == true && it.type == "coin" }
-                        .sortedBy { it.rank }
-                        .take(10).forEach { coin ->
-                            coinsRepository.getCoinById(coin.id).onSuccess { item ->
-                                outList.add(item)
-                            }
+                        .forEach { coin ->
+                            coinsRepository.getCoinById(coin.id)
+                                .onSuccess { item ->
+                                    outList.add(item)
+                                }
                         }
                     coinsList.update { outList }
                 }
