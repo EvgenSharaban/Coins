@@ -39,18 +39,16 @@ class MainActivityViewModel @Inject constructor(
         viewModelScope.launch {
             if (hasInternetConnection()) {
                 coinsRepository.getCoins().onSuccess { coins ->
-                    val list = coins
+                    val outList = mutableListOf<ModelForCustomView>()
+                    coins
                         .filter { it.rank > 0 && it.isActive == true && it.type == "coin" }
                         .sortedBy { it.rank }
-                    list.take(10).forEach { coin ->
-                        coinsRepository.getCoinById(coin.id).onSuccess { item ->
-                            coinsList.update {
-                                it.toMutableList().apply {
-                                    add(item)
-                                }
+                        .take(10).forEach { coin ->
+                            coinsRepository.getCoinById(coin.id).onSuccess { item ->
+                                outList.add(item)
                             }
                         }
-                    }
+                    coinsList.update { outList }
                 }
             } else {
                 val message = context.getString(R.string.no_internet_connection)
