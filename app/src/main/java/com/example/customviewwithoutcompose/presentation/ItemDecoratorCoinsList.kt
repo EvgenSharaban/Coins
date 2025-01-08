@@ -1,12 +1,12 @@
 package com.example.customviewwithoutcompose.presentation
 
 import android.graphics.Rect
-import android.util.TypedValue
 import android.view.View
+import androidx.annotation.DimenRes
 import androidx.recyclerview.widget.RecyclerView
 
 class ItemDecoratorCoinsList(
-    private val bottomValueInDPLastItem: Int,
+    @DimenRes private val bottomMarginResId: Int,
 ) : RecyclerView.ItemDecoration() {
     override fun getItemOffsets(
         outRect: Rect,
@@ -18,14 +18,16 @@ class ItemDecoratorCoinsList(
 
         val itemPosition = parent.getChildAdapterPosition(view)
 
-        /** cast margin to dp */
-        val bottomSpase = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            bottomValueInDPLastItem.toFloat(),
-            view.resources.displayMetrics
-        ).toInt()
+        /** cast margin in dp to Int */
+//        val bottomSpase = TypedValue.applyDimension(
+//            TypedValue.COMPLEX_UNIT_DIP,
+//            bottomValueInDPLastItem.toFloat(),
+//            view.resources.displayMetrics
+//        ).toInt()
 
-        /** adding marginTop to first item and marginBottom to last item */
+        val bottomSpase = view.resources.getDimensionPixelSize(bottomMarginResId)
+
+        /** adding marginBottom to last item */
         when (itemPosition) {
             state.itemCount - 1 -> outRect.bottom = bottomSpase
         }

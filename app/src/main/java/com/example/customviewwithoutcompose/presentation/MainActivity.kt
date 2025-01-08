@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import com.example.customviewwithoutcompose.R
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        coinsDecorator = ItemDecoratorCoinsList(bottomValueInDPLastItem = 56)
+        coinsDecorator = ItemDecoratorCoinsList(R.dimen.bottom_margin_last)
 
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
