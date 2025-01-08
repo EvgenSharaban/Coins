@@ -9,7 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
-import com.example.customviewwithoutcompose.utils.updatePadding
+import com.example.customviewwithoutcompose.core.other.updatePadding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest

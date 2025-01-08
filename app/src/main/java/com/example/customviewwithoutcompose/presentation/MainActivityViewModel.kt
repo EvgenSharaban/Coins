@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.domain.models.ModelForCustomView
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
-import com.example.customviewwithoutcompose.utils.TAG
+import com.example.customviewwithoutcompose.core.other.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel

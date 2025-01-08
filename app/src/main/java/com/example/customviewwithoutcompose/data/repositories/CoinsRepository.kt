@@ -9,7 +9,7 @@ import com.example.customviewwithoutcompose.data.network.ApiService
 import com.example.customviewwithoutcompose.data.network.entities.mappers.CoinMapper
 import com.example.customviewwithoutcompose.domain.models.ModelForCustomView
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
-import com.example.customviewwithoutcompose.utils.TAG
+import com.example.customviewwithoutcompose.core.other.TAG
 import javax.inject.Inject
 
 class CoinsRepositoryImpl @Inject constructor(

@@ -2,7 +2,7 @@ package com.example.customviewwithoutcompose.core.networking
 
 import android.util.Log
 import androidx.annotation.CallSuper
-import com.example.customviewwithoutcompose.utils.TAG
+import com.example.customviewwithoutcompose.core.other.TAG
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import retrofit2.Response

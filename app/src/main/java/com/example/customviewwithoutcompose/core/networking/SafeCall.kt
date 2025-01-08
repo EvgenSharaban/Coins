@@ -2,7 +2,7 @@ package com.example.customviewwithoutcompose.core.networking
 
 import android.util.Log
 import com.example.customviewwithoutcompose.data.network.entities.mappers.FromEntityToDomainMapper
-import com.example.customviewwithoutcompose.utils.TAG
+import com.example.customviewwithoutcompose.core.other.TAG
 import retrofit2.Response
 
 suspend fun <T> safeApiCall(

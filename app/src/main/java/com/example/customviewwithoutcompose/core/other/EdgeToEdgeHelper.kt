@@ -1,11 +1,10 @@
-package com.example.customviewwithoutcompose.utils
+package com.example.customviewwithoutcompose.core.other
 
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 
-const val TAG = "CustomViewTag-"
 
 fun View.updatePadding(
     needUpdateTop: Boolean,
