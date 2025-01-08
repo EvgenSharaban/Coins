@@ -8,13 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
+import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.updatePadding
+import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
+import com.example.customviewwithoutcompose.presentation.adapters.CoinsListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import com.example.customviewwithoutcompose.R
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

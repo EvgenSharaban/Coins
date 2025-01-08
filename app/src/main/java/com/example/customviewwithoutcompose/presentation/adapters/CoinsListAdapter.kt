@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation
+package com.example.customviewwithoutcompose.presentation.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,10 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.presentation.CoinsListAdapter.CoinViewHolder
 import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
 
-class CoinsListAdapter : ListAdapter<ModelForCustomView, CoinViewHolder>(CoinDiffUtil()) {
+class CoinsListAdapter : ListAdapter<ModelForCustomView, CoinsListAdapter.CoinViewHolder>(CoinDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoinViewHolder {
 //                val view = CustomView(parent.context)
