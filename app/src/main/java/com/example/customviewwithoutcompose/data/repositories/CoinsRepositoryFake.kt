@@ -45,7 +45,11 @@ class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
         )
     )
 
-    override suspend fun getCoins(): Result<List<CoinDomain>> {
+    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
+        return Result.success(fakeCoins)
+    }
+
+    override suspend fun getCoinsFullEntity(): Result<List<CoinDomain>> {
         return Result.success(fakeCoins)
     }
 
