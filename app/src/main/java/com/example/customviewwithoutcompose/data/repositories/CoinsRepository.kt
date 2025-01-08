@@ -5,22 +5,22 @@ import com.example.customviewwithoutcompose.core.networking.safeApiCall
 import com.example.customviewwithoutcompose.core.networking.safeApiCallList
 import com.example.customviewwithoutcompose.core.networking.toDomain
 import com.example.customviewwithoutcompose.core.networking.toDomainList
-import com.example.customviewwithoutcompose.data.network.ApiService
-import com.example.customviewwithoutcompose.data.network.entities.mappers.CoinMapper
-import com.example.customviewwithoutcompose.domain.models.ModelForCustomView
-import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.core.other.TAG
+import com.example.customviewwithoutcompose.data.network.ApiService
+import com.example.customviewwithoutcompose.data.network.entities.mappers.CoinDomainMapper
+import com.example.customviewwithoutcompose.domain.models.CoinDomain
+import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import javax.inject.Inject
 
 class CoinsRepositoryImpl @Inject constructor(
     private val apiService: ApiService
 ) : CoinsRepository {
 
-    override suspend fun getCoins(): Result<List<ModelForCustomView>> {
+    override suspend fun getCoins(): Result<List<CoinDomain>> {
         return safeApiCallList {
             apiService.getCoins()
         }
-            .toDomainList(CoinMapper)
+            .toDomainList(CoinDomainMapper)
             .mapCatching { coins ->
                 coins
                     .filter { it.rank > 0 && it.isActive == true && it.type == "coin" }
@@ -35,10 +35,10 @@ class CoinsRepositoryImpl @Inject constructor(
             }
     }
 
-    override suspend fun getCoinById(id: String): Result<ModelForCustomView> {
+    override suspend fun getCoinById(id: String): Result<CoinDomain> {
         return safeApiCall {
             apiService.getCoinById(id)
-        }.toDomain(CoinMapper)
+        }.toDomain(CoinDomainMapper)
     }
 
 }

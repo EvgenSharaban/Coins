@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.domain.models.ModelForCustomView
 import com.example.customviewwithoutcompose.presentation.CoinsListAdapter.CoinViewHolder
+import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
 
 class CoinsListAdapter : ListAdapter<ModelForCustomView, CoinViewHolder>(CoinDiffUtil()) {
 

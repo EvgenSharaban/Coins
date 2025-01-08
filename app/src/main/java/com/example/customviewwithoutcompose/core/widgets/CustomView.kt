@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.domain.models.ModelForCustomView
+import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
 import kotlin.properties.Delegates
 
 typealias ClickListener = () -> Unit
