@@ -4,7 +4,9 @@ import com.example.customviewwithoutcompose.domain.models.CoinDomain
 
 interface CoinsRepository {
 
-    suspend fun getCoins(): Result<List<CoinDomain>>
+    suspend fun getCoinsShortEntity(): Result<List<CoinDomain>>
+
+    suspend fun getCoinsFullEntity(): Result<List<CoinDomain>>
 
     suspend fun getCoinById(id: String): Result<CoinDomain>
 }

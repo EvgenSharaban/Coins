@@ -34,21 +34,14 @@ class MainActivityViewModel @Inject constructor(
 
     init {
         getCoins()
+        Log.d(TAG, "getCoins: time 0")
     }
 
     private fun getCoins() {
         viewModelScope.launch {
             if (hasInternetConnection()) {
-                coinsRepository.getCoins().onSuccess { coins ->
-                    val outList = mutableListOf<ModelForCustomView>()
-                    coins
-                        .forEach { coin ->
-                            coinsRepository.getCoinById(coin.id)
-                                .onSuccess { item ->
-                                    outList.add(item.mapToUiModel())
-                                }
-                        }
-                    coinsList.update { outList }
+                coinsRepository.getCoinsFullEntity().onSuccess { coins ->
+                    coinsList.update { coins.map { it.mapToUiModel() } }
                 }
             } else {
                 val message = context.getString(R.string.no_internet_connection)
