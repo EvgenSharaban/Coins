@@ -10,11 +10,10 @@ import com.example.customviewwithoutcompose.data.network.ApiService
 import com.example.customviewwithoutcompose.data.network.entities.mappers.CoinDomainMapper
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import javax.inject.Inject
 
 class CoinsRepositoryImpl @Inject constructor(
@@ -27,16 +26,15 @@ class CoinsRepositoryImpl @Inject constructor(
         }
             .toDomainList(CoinDomainMapper)
             .mapCatching { coins ->
-                coroutineScope {
-                    Log.d(TAG, "getCoins: time start")
-                    val list = coins
-                        .filter { it.rank > 0 && it.isActive == true && it.type == FILTERING_TYPE }
-                        .sortedBy { it.rank }
-                        .take(COUNT_ITEMS)
+                Log.d(TAG, "getCoins: time start")
+                val list = coins
+                    .filter { it.rank > 0 && it.isActive == true && it.type == FILTERING_TYPE }
+                    .sortedBy { it.rank }
+                    .take(MAX_COUNT_ITEMS)
 
-                    Log.d(TAG, "getCoins: time end")
-                    return@coroutineScope list
-                }
+                Log.d(TAG, "getCoins: time end")
+                list
+
             }
             .onSuccess { coins ->
                 Log.d(TAG, "getCoins: success, size = ${coins.size}")
@@ -52,18 +50,15 @@ class CoinsRepositoryImpl @Inject constructor(
         }
             .toDomainList(CoinDomainMapper)
             .mapCatching { coins ->
-                val semaphore = Semaphore(COUNT_THREADS)
                 coroutineScope {
                     Log.d(TAG, "getCoins: time start")
                     val list = coins
                         .filter { it.rank > 0 && it.isActive == true && it.type == FILTERING_TYPE }
                         .sortedBy { it.rank }
-                        .take(COUNT_ITEMS)
+                        .take(MAX_COUNT_ITEMS)
                         .map { coin ->
-                            async {
-                                semaphore.withPermit {
-                                    getCoinById(coin.id)
-                                }
+                            async(Dispatchers.IO) {
+                                getCoinById(coin.id)
                             }
                         }
                         .awaitAll()
@@ -75,7 +70,7 @@ class CoinsRepositoryImpl @Inject constructor(
                         }
                         .filterNotNull()
                     Log.d(TAG, "getCoins: time end")
-                    return@coroutineScope list
+                    list
                 }
             }
             .onSuccess { coins ->
@@ -94,9 +89,8 @@ class CoinsRepositoryImpl @Inject constructor(
 
     companion object {
 
-        const val COUNT_ITEMS = 10
-        const val COUNT_THREADS = 10
-        const val FILTERING_TYPE = "coin"
+        private const val MAX_COUNT_ITEMS = 15
+        private const val FILTERING_TYPE = "coin"
     }
 
 }

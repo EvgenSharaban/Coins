@@ -1,6 +1,6 @@
 package com.example.customviewwithoutcompose.di.modules
 
-import com.example.customviewwithoutcompose.data.repositories.CoinsRepositoryImpl
+import com.example.customviewwithoutcompose.data.repositories.CoinsRepositoryFake
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import dagger.Binds
 import dagger.Module
@@ -12,5 +12,5 @@ import dagger.hilt.components.SingletonComponent
 abstract class CoinsModule {
 
     @Binds
-    abstract fun provideCoinsRepository(coinsRepositoryImpl: CoinsRepositoryImpl): CoinsRepository
+    abstract fun provideCoinsRepository(coinsRepositoryImpl: CoinsRepositoryFake): CoinsRepository
 }
