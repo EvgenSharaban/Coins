@@ -33,4 +33,19 @@ data class CoinEntity(
 
     @field:SerializedName("started_at")
     val startedAt: String? = null,
+
+    @field:SerializedName("quotes")
+    var quotes: QuotesEntity? = null,
+)
+
+data class QuotesEntity(
+
+    @field:SerializedName("USD")
+    val usd: USDEntity? = null,
+)
+
+data class USDEntity(
+
+    @field:SerializedName("price")
+    val price: Double? = null,
 )

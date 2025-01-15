@@ -11,4 +11,5 @@ data class CoinDomain(
     val logo: String,
     val description: String,
     val startedAt: String,
+    var price: Double
 )

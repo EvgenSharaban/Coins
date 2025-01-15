@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
 
-    val fakeCoins = List(10000) { index ->
+    val fakeCoins = List(15) { index ->
         CoinDomain(
             id = (index + 1).toString(),
             name = "BitcoinFake",
@@ -22,13 +22,14 @@ class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
             type = "coin",
             logo = "https://www.shutterstock.com/image-vector/crypto-currency-golden-coin-black-600nw-593193626.jpg",
             description = "The first and most popular cryptocurrency.",
-            startedAt = "2009-01-03"
+            startedAt = "2010-07-17T00:00:00Z",
+            price = 2525.7
         )
     }
 
-    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
-        return Result.success(fakeCoins)
-    }
+//    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
+//        return Result.success(fakeCoins)
+//    }
 
     override suspend fun getCoinsFullEntity(): Result<List<CoinDomain>> {
         return Result.success(fakeCoins)
@@ -55,4 +56,15 @@ class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
             Result.failure(Exception("Coin with id: $id not found"))
         }
     }
+
+    override suspend fun getTickerById(id: String): Result<CoinDomain> {
+        val coin = fakeCoins.find { it.id == id }
+        return if (coin != null) {
+            Result.success(coin)
+        } else {
+            Result.failure(Exception("Coin with id: $id not found"))
+        }
+    }
+
+//    override suspend fun getTickerById(id: String): Double = 0.34
 }

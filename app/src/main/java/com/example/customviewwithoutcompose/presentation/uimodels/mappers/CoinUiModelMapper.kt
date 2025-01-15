@@ -15,7 +15,8 @@ object CoinUiModelMapper {
             logo = this.logo,
             shortNameText = this.symbol,
             type = this.type,
-            isActive = this.isActive
+            isActive = this.isActive,
+            price = this.price
         )
     }
 

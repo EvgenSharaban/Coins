@@ -17,6 +17,7 @@ object CoinDomainMapper : FromEntityToDomainMapper<CoinEntity, CoinDomain> {
             startedAt = this?.startedAt ?: "",
             logo = this?.logo ?: "",
             description = this?.description ?: "",
+            price = this?.quotes?.usd?.price ?: 0.0
         )
     }
 

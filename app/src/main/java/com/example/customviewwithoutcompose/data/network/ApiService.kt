@@ -14,4 +14,10 @@ interface ApiService {
     suspend fun getCoinById(
         @Path("coin_id") coinId: String
     ): Response<CoinEntity>
+
+    @GET("tickers/{coin_id}")
+    suspend fun getTickerById(
+        @Path("coin_id") coinId: String
+    ): Response<CoinEntity>
+
 }

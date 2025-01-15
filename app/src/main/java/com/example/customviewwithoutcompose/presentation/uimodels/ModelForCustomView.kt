@@ -17,7 +17,8 @@ data class ModelForCustomView(
     @StyleRes val shortNameTextAppearance: Int = R.style.ShortNameTextAppearance,
 
     val type: String,
-    val isActive: Boolean
+    val isActive: Boolean,
+    val price: Double
 ) {
 
     companion object {
@@ -31,7 +32,8 @@ data class ModelForCustomView(
             logo = "",
             shortNameText = "",
             type = "",
-            isActive = false
+            isActive = false,
+            price = 0.0
         )
     }
 }

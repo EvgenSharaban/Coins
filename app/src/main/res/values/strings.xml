@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">Custom View without Compose</string>
+    <string name="app_name">Coins</string>
     <string name="coins_list">Coins List</string>
     <string name="no_internet_connection">No internet connection</string>
+    <string name="price_for_coin">Price: %1$s USD</string>
+    <string name="coin_created_at">Since %1$s</string>
 </resources>
