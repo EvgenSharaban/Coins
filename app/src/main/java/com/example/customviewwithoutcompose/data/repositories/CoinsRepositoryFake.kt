@@ -27,6 +27,7 @@ class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
         )
     }
 
+    // if delete do it in repo and impl also
 //    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
 //        return Result.success(fakeCoins)
 //    }
@@ -65,6 +66,4 @@ class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
             Result.failure(Exception("Coin with id: $id not found"))
         }
     }
-
-//    override suspend fun getTickerById(id: String): Double = 0.34
 }

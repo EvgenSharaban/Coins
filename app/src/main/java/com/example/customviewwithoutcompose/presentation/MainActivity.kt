@@ -12,6 +12,7 @@ import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.presentation.adapters.CoinsListAdapter
+import com.example.customviewwithoutcompose.presentation.models.ModelForAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -22,7 +23,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainActivityViewModel by viewModels()
-    private val coinsAdapter = CoinsListAdapter()
+    private val coinsAdapter = CoinsListAdapter(
+        onClick = ::onItemClicked
+    )
     private lateinit var coinsDecorator: ItemDecoratorCoinsList
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,25 +51,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.root.updatePadding(true, false)
 
-//        viewModel.coinModel.observe(this) { coin ->
-//            if (coin != null) {
-//                binding.customView.modelForCustomView = ModelForCustomView(
-//                    rankText = coin.rank.toString(),
-//                    rankTextAppearance = R.style.RankTextAppearance,
-//                    rankBackgroundColor = getColor(R.color.yellow),
-//                    nameText = coin.name ?: "",
-//                    descriptionText = coin.description ?: "",
-//                    creationDate = "Since 2009",
-//                    logo = R.drawable.ic_avatar_test_user,
-//                    shortNameText = coin.symbol ?: "",
-//                    shortNameTextAppearance = R.style.ShortNameTextAppearance,
-//                    shortNameBackgroundColor = getColor(R.color.white)
-//                )
-//                binding.customView.descriptionText = coin.description ?: ""
-//            }
-//        }
-
-//        setListeners()
     }
 
     override fun onStart() {
@@ -85,14 +69,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private fun setListeners() {
-//        binding.customView.setListener {
-//            binding.customView.descriptionText = "Description view clicked"
-//            binding.customView.logo = R.drawable.case_detail_sample
-//        }
-//    }
-
     private fun showToast(message: String) {
         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
     }
+
+    private fun onItemClicked(item: ModelForAdapter) {
+        viewModel.onItemToggle(item)
+    }
+
 }

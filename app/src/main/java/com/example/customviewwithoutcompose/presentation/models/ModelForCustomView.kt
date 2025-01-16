@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.uimodels
+package com.example.customviewwithoutcompose.presentation.models
 
 import androidx.annotation.StyleRes
 import com.example.customviewwithoutcompose.R

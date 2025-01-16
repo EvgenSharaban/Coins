@@ -1,7 +1,7 @@
-package com.example.customviewwithoutcompose.presentation.uimodels.mappers
+package com.example.customviewwithoutcompose.presentation.models.mappers
 
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
-import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
+import com.example.customviewwithoutcompose.presentation.models.ModelForCustomView
 
 object CoinUiModelMapper {
 

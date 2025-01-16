@@ -10,79 +10,67 @@ import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.formatDate
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
+import com.example.customviewwithoutcompose.presentation.models.ModelForAdapter
 
-class CoinsListAdapter : ListAdapter<ModelForCustomView, CoinsListAdapter.CoinViewHolder>(CoinDiffUtil()) {
-
-    private var expandedPosition: Int = RecyclerView.NO_POSITION
+class CoinsListAdapter(private val onClick: (item: ModelForAdapter) -> Unit) :
+    ListAdapter<ModelForAdapter, CoinsListAdapter.CoinViewHolder>(CoinDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoinViewHolder {
 
         val view = LayoutInflater.from(parent.context).inflate(R.layout.custom_view, parent, false)
-        return CoinViewHolder(CustomViewBinding.bind(view))
+        return CoinViewHolder(CustomViewBinding.bind(view), onClick)
     }
 
     override fun onBindViewHolder(holder: CoinViewHolder, position: Int) {
         getItem(position)?.let {
             holder.bind(it)
         }
-
-        val isExpanded = position == expandedPosition
-        holder.toggleVisibility(isExpanded)
-
-        holder.itemView.setOnClickListener {
-            val previousPosition = expandedPosition
-            expandedPosition = if (expandedPosition == position) {
-                RecyclerView.NO_POSITION
-            } else {
-                position
-            }
-
-            notifyItemChanged(previousPosition)
-            notifyItemChanged(expandedPosition)
-        }
     }
 
 
     inner class CoinViewHolder(
-        private val binding: CustomViewBinding
+        private val binding: CustomViewBinding,
+        onClick: (item: ModelForAdapter) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: ModelForCustomView) {
-            val rankText = model.rank.toString()
-            binding.rank.apply {
-                text = rankText
-                setTextAppearance(model.rankTextAppearance)
-            }
-
-            binding.tvName.text = model.nameText
-            binding.tvDescription.text = model.descriptionText
-            binding.price.text = itemView.context.getString(R.string.price_for_coin, model.price.toString())
-            binding.logo.load(model.logo)
-            binding.tvCreationDate.text = itemView.context.getString(R.string.coin_created_at, formatDate(model.creationDate))
-
-            binding.shortName.apply {
-                text = model.shortNameText
-                setTextAppearance(model.shortNameTextAppearance)
+        init {
+            itemView.setOnClickListener {
+                onClick(getItem(adapterPosition))
             }
         }
 
-        fun toggleVisibility(isExpanded: Boolean) {
-            binding.tvDescription.isVisible = isExpanded
+        fun bind(model: ModelForAdapter) {
+            val rankText = model.customViewModel.rank.toString()
+            binding.rank.apply {
+                text = rankText
+                setTextAppearance(model.customViewModel.rankTextAppearance)
+            }
+
+            binding.tvName.text = model.customViewModel.nameText
+            binding.tvDescription.isVisible = model.isExpanded
+            binding.tvDescription.text = model.customViewModel.descriptionText
+            binding.price.text = itemView.context.getString(R.string.price_for_coin, model.customViewModel.price.toString())
+            binding.logo.load(model.customViewModel.logo)
+            binding.tvCreationDate.text = itemView.context.getString(R.string.coin_created_at, formatDate(model.customViewModel.creationDate))
+
+            binding.shortName.apply {
+                text = model.customViewModel.shortNameText
+                setTextAppearance(model.customViewModel.shortNameTextAppearance)
+            }
         }
     }
 
-    private class CoinDiffUtil : DiffUtil.ItemCallback<ModelForCustomView>() {
+    private class CoinDiffUtil : DiffUtil.ItemCallback<ModelForAdapter>() {
         override fun areItemsTheSame(
-            oldItem: ModelForCustomView,
-            newItem: ModelForCustomView
+            oldItem: ModelForAdapter,
+            newItem: ModelForAdapter
         ): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.customViewModel.id == newItem.customViewModel.id
         }
 
         override fun areContentsTheSame(
-            oldItem: ModelForCustomView,
-            newItem: ModelForCustomView
+            oldItem: ModelForAdapter,
+            newItem: ModelForAdapter
         ): Boolean {
             return oldItem == newItem
         }

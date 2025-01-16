@@ -10,12 +10,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
-import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
-import com.example.customviewwithoutcompose.presentation.uimodels.mappers.CoinUiModelMapper.mapToUiModel
+import com.example.customviewwithoutcompose.presentation.models.ModelForAdapter
+import com.example.customviewwithoutcompose.presentation.models.ModelForCustomView
+import com.example.customviewwithoutcompose.presentation.models.mappers.CoinUiModelMapper.mapToUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,7 +31,9 @@ class MainActivityViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    val coinsList = MutableStateFlow<List<ModelForCustomView>>(emptyList())
+    private val _coinForCustomViewList = MutableStateFlow<List<ModelForCustomView>>(emptyList())
+    private val _coinForAdapterList = MutableStateFlow<List<ModelForAdapter>>(emptyList())
+    val coinsList = _coinForAdapterList.asStateFlow()
 
     private val _event = Channel<String>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
@@ -35,13 +41,27 @@ class MainActivityViewModel @Inject constructor(
     init {
         getCoins()
         Log.d(TAG, "getCoins: time 0")
+
+        viewModelScope.launch {
+            _coinForCustomViewList.map { coins ->
+                coins.map { coin ->
+                    ModelForAdapter(
+                        customViewModel = coin,
+                        isExpanded = false
+                    )
+                }
+            }
+                .collectLatest { list ->
+                    _coinForAdapterList.update { list }
+                }
+        }
     }
 
     private fun getCoins() {
         viewModelScope.launch {
             if (hasInternetConnection()) {
                 coinsRepository.getCoinsFullEntity().onSuccess { coins ->
-                    coinsList.update { coins.map { it.mapToUiModel() } }
+                    _coinForCustomViewList.update { coins.map { it.mapToUiModel() } }
                 }
             } else {
                 val message = context.getString(R.string.no_internet_connection)
@@ -58,11 +78,17 @@ class MainActivityViewModel @Inject constructor(
         val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
 
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-//        return when {
-//            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-//            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-//            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-//            else -> false
-//        }
+    }
+
+    fun onItemToggle(item: ModelForAdapter) {
+        _coinForAdapterList.update { coins ->
+            coins.map { coin ->
+                if (coin.customViewModel.id == item.customViewModel.id) {
+                    coin.copy(isExpanded = !coin.isExpanded)
+                } else {
+                    coin
+                }
+            }
+        }
     }
 }

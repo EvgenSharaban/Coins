@@ -8,10 +8,8 @@ import android.util.AttributeSet
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
-import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.presentation.uimodels.ModelForCustomView
 import kotlin.properties.Delegates
 
 typealias ClickListener = () -> Unit
@@ -69,11 +67,11 @@ class CustomView(
     var shortNameBackgroundColor: Int = 0
 
     // ability to set model from code
-    var modelForCustomView: ModelForCustomView = ModelForCustomView.DEFAULT
-        set(value) {
-            field = value
-            updateView(value)
-        }
+//    var modelForCustomView: ModelForCustomView = ModelForCustomView.DEFAULT
+//        set(value) {
+//            field = value
+//            updateView(value)
+//        }
 
     init {
         val view = inflate(context, R.layout.custom_view, this)
@@ -99,9 +97,9 @@ class CustomView(
     }
 
     // to using from activity class
-    fun setListener(listener: ClickListener) {
-        this.listener = listener
-    }
+//    fun setListener(listener: ClickListener) {
+//        this.listener = listener
+//    }
 
     private fun initView(attrs: AttributeSet? = null, defStyleAttr: Int = 0, defStyleRes: Int = 0) {
         if (attrs == null) return
@@ -147,23 +145,24 @@ class CustomView(
         }
     }
 
-    private fun updateView(model: ModelForCustomView) {
-        val rank = model.rank.toString()
-        binding.rank.apply {
-            text = rank
-            setTextAppearance(model.rankTextAppearance)
-        }
-
-        binding.tvName.text = model.nameText
-        binding.tvDescription.text = model.descriptionText
-        binding.logo.load(model.logo)
-        binding.tvCreationDate.text = model.creationDate
-
-        binding.shortName.apply {
-            text = model.shortNameText
-            setTextAppearance(model.shortNameTextAppearance)
-        }
-    }
+    // need with modelForCustomView, if delete do it with modelForCustomView
+//    private fun updateView(model: ModelForCustomView) {
+//        val rank = model.rank.toString()
+//        binding.rank.apply {
+//            text = rank
+//            setTextAppearance(model.rankTextAppearance)
+//        }
+//
+//        binding.tvName.text = model.nameText
+//        binding.tvDescription.text = model.descriptionText
+//        binding.logo.load(model.logo)
+//        binding.tvCreationDate.text = model.creationDate
+//
+//        binding.shortName.apply {
+//            text = model.shortNameText
+//            setTextAppearance(model.shortNameTextAppearance)
+//        }
+//    }
 
     private fun initListeners() {
         binding.container.setOnClickListener {
