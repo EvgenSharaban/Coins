@@ -13,5 +13,5 @@ import dagger.hilt.components.SingletonComponent
 abstract class CoinsModule {
 
     @Binds
-    abstract fun provideCoinsRepository(coinsRepositoryImpl: CoinsRepositoryImpl): CoinsRepository
+    abstract fun provideCoinsRepository(coinsRepositoryImpl: CoinsRepositoryFake): CoinsRepository
 }

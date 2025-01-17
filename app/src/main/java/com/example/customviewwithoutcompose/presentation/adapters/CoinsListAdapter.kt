@@ -27,6 +27,20 @@ class CoinsListAdapter(private val onClick: (item: ModelForAdapter) -> Unit) :
         }
     }
 
+    override fun onBindViewHolder(holder: CoinViewHolder, position: Int, payloads: List<Any?>) {
+        if (payloads.isEmpty() || payloads[0] == null) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            for (payload in payloads) {
+                when (payload) {
+                    DESCRIPTION_VISIBILITY_PAYLOAD -> {
+                        holder.toggleVisibility(getItem(position).isExpanded)
+                    }
+                }
+            }
+        }
+    }
+
 
     inner class CoinViewHolder(
         private val binding: CustomViewBinding,
@@ -58,6 +72,10 @@ class CoinsListAdapter(private val onClick: (item: ModelForAdapter) -> Unit) :
                 setTextAppearance(model.customViewModel.shortNameTextAppearance)
             }
         }
+
+        fun toggleVisibility(isExpanded: Boolean) {
+            binding.tvDescription.isVisible = isExpanded
+        }
     }
 
     private class CoinDiffUtil : DiffUtil.ItemCallback<ModelForAdapter>() {
@@ -74,5 +92,16 @@ class CoinsListAdapter(private val onClick: (item: ModelForAdapter) -> Unit) :
         ): Boolean {
             return oldItem == newItem
         }
+
+        override fun getChangePayload(oldItem: ModelForAdapter, newItem: ModelForAdapter): Any? {
+            return if (oldItem.isExpanded != newItem.isExpanded)
+                DESCRIPTION_VISIBILITY_PAYLOAD
+            else null
+        }
+    }
+
+    companion object {
+
+        private const val DESCRIPTION_VISIBILITY_PAYLOAD = "Description visibility changed"
     }
 }

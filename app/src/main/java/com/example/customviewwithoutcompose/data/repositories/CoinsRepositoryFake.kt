@@ -14,14 +14,14 @@ class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
     val fakeCoins = List(15) { index ->
         CoinDomain(
             id = (index + 1).toString(),
-            name = "BitcoinFake",
+            name = "Bitcoin Fake",
             symbol = "BTC",
             rank = index + 1,
             isNew = false,
             isActive = true,
             type = "coin",
             logo = "https://www.shutterstock.com/image-vector/crypto-currency-golden-coin-black-600nw-593193626.jpg",
-            description = "The first and most popular cryptocurrency.",
+            description = "The first and most popular cryptocurrency. The first and most popular cryptocurrency. The first and most popular cryptocurrency. The first and most popular cryptocurrency.",
             startedAt = "2010-07-17T00:00:00Z",
             price = 2525.7
         )
