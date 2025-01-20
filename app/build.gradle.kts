@@ -66,9 +66,14 @@ dependencies {
     // coil
     implementation(libs.coil)
 
+    // room
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 }
 
 // Allow references to generated code (hilt)
 kapt {
     correctErrorTypes = true
+    useBuildCache = true
 }
