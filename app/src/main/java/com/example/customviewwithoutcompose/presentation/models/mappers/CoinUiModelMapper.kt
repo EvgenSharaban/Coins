@@ -20,4 +20,6 @@ object CoinUiModelMapper {
         )
     }
 
+    fun List<CoinDomain>.mapToUiModelList(): List<ModelForCustomView> = this.map { it.mapToUiModel() }
+
 }

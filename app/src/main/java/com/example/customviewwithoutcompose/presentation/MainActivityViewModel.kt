@@ -13,8 +13,10 @@ import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.presentation.models.ModelForAdapter
 import com.example.customviewwithoutcompose.presentation.models.ModelForCustomView
 import com.example.customviewwithoutcompose.presentation.models.mappers.CoinUiModelMapper.mapToUiModel
+import com.example.customviewwithoutcompose.presentation.models.mappers.CoinUiModelMapper.mapToUiModelList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,10 +61,17 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun getCoins() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val localCoins = coinsRepository.getCoinsFromRoom()
+            _coinForCustomViewList.update { localCoins.map { it.mapToUiModel() } }
+        }
         viewModelScope.launch {
             if (hasInternetConnection()) {
                 coinsRepository.getCoinsFullEntity().onSuccess { coins ->
-                    _coinForCustomViewList.update { coins.map { it.mapToUiModel() } }
+                    val coinsList = coins.mapToUiModelList()
+                    if (_coinForCustomViewList.value != coinsList) {
+                        _coinForCustomViewList.update { coinsList }
+                    }
                 }
             } else {
                 val message = context.getString(R.string.no_internet_connection)

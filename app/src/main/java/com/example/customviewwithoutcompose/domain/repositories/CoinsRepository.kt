@@ -11,4 +11,8 @@ interface CoinsRepository {
     suspend fun getCoinById(id: String): Result<CoinDomain>
 
     suspend fun getTickerById(id: String): Result<CoinDomain>
+
+    suspend fun getCoinsFromRoom(): List<CoinDomain>
+
+    suspend fun insertCoinsToRoom(list: List<CoinDomain>)
 }
