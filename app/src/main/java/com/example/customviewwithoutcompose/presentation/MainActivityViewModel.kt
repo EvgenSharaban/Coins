@@ -24,6 +24,9 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.filter
+import kotlin.collections.map
+import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
@@ -55,6 +58,8 @@ class MainActivityViewModel @Inject constructor(
                     _coinForAdapterList.update { list }
                 }
         }
+
+        measurementOfMathOperation()
     }
 
     private fun getCoins() {
@@ -82,6 +87,15 @@ class MainActivityViewModel @Inject constructor(
 
     fun onItemToggle(item: ModelForAdapter) {
         _coinForAdapterList.update { coins ->
+//            val index = coins.indexOfFirst { it.customViewModel.id == item.customViewModel.id }
+//            if (index != -1) {
+//                val updatedList = coins.toMutableList()
+//                val updatedCoin = coins[index].copy(isExpanded = !coins[index].isExpanded)
+//                updatedList[index] = updatedCoin
+//                updatedList
+//            } else {
+//                coins
+//            }
             coins.map { coin ->
                 if (coin.customViewModel.id == item.customViewModel.id) {
                     coin.copy(isExpanded = !coin.isExpanded)
@@ -91,4 +105,28 @@ class MainActivityViewModel @Inject constructor(
             }
         }
     }
+
+    private fun measurementOfMathOperation() {
+        // first way of measurement
+        val list = (1..1000000).toList()
+        Log.d(TAG, "mathOperation: started")
+        list
+            .map { it * 10 }
+            .filter { it % 2 == 0 }
+            .filter { it > 100 }
+//            .take(100)
+        Log.d(TAG, "mathOperation: finished")
+
+        // second way of measurement
+        val time = measureTimeMillis {
+            val list = (1..1000000).toList()
+            list
+                .map { it * 10 }
+                .filter { it % 2 == 0 }
+                .filter { it > 100 }
+//                .take(100)
+        }
+        Log.d(TAG, "mathOperation measureTimeMillis: $time ms")
+    }
+
 }

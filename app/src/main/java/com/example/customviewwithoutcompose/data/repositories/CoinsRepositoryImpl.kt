@@ -103,8 +103,8 @@ class CoinsRepositoryImpl @Inject constructor(
     companion object {
 
         private const val NUMBERS_OF_DIGITS_PRICE_AFTER_POINT = 2
-        private const val MAX_COUNT_ITEMS = 5
-        private const val FILTERING_TYPE = "coin"
+        private const val MAX_COUNT_ITEMS = 10
+        const val FILTERING_TYPE = "coin"
     }
 
 }

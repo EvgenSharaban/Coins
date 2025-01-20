@@ -1,5 +1,8 @@
 package com.example.customviewwithoutcompose.data.repositories
 
+import android.util.Log
+import com.example.customviewwithoutcompose.core.other.TAG
+import com.example.customviewwithoutcompose.data.repositories.CoinsRepositoryImpl.Companion.FILTERING_TYPE
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +14,7 @@ import javax.inject.Inject
 
 class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
 
-    val fakeCoins = List(15) { index ->
+    val fakeCoins = List(1000) { index ->
         CoinDomain(
             id = (index + 1).toString(),
             name = "Bitcoin Fake",
@@ -36,7 +39,10 @@ class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
         return Result.success(fakeCoins)
             .mapCatching { coins ->
                 coroutineScope {
-                    coins
+                    Log.d(TAG, "getCoins: time start")
+                    val list = coins
+                        .filter { it.rank > 0 && it.isActive == true && it.type == FILTERING_TYPE }
+                        .sortedBy { it.rank }
                         .map { coin ->
                             async(Dispatchers.IO) {
                                 getCoinById(coin.id).getOrNull()
@@ -44,6 +50,8 @@ class CoinsRepositoryFake @Inject constructor() : CoinsRepository {
                         }
                         .awaitAll()
                         .filterNotNull()
+                    Log.d(TAG, "getCoins: time end")
+                    list
                 }
             }
     }
