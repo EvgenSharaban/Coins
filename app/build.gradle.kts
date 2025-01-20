@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
-//    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
 }
 
@@ -60,20 +59,13 @@ dependencies {
 
     // hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
-//    ksp("com.google.dagger:hilt-android-compiler:2.51.1")
+    ksp(libs.hilt.android.compiler)
 
     // coil
     implementation(libs.coil)
 
     // room
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
-}
-
-// Allow references to generated code (hilt)
-kapt {
-    correctErrorTypes = true
-    useBuildCache = true
 }
