@@ -64,7 +64,11 @@ class MainActivityViewModel @Inject constructor(
     private fun observeData() {
         viewModelScope.launch(Dispatchers.IO) {
             coinsRepository.getCoinsFromDB().collect { localCoins ->
-                _coinForCustomViewList.update { localCoins.map { it.mapToUiModel() } }
+                val coinsList = localCoins.map { it.mapToUiModel() }
+                Log.d(TAG, "observeData: _coinForCustomViewList size = ${_coinForCustomViewList.value.size}, coinsList size = ${coinsList.size}")
+                if (_coinForCustomViewList.value != coinsList) {
+                    _coinForCustomViewList.update { coinsList }
+                }
             }
         }
     }

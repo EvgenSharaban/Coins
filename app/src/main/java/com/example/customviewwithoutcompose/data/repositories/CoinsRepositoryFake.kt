@@ -1,6 +1,7 @@
 package com.example.customviewwithoutcompose.data.repositories
 
 import android.util.Log
+import androidx.room.withTransaction
 import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.data.local.room.CoinsDataBase
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToLocalEntityList
@@ -99,8 +100,10 @@ class CoinsRepositoryFake @Inject constructor(
     override suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {
             withContext(Dispatchers.IO) {
-                dataBase.coinsDao().deleteAllCoins()
-                dataBase.coinsDao().insertAllCoins(list.mapToLocalEntityList())
+                dataBase.withTransaction {
+                    dataBase.coinsDao().deleteAllCoins()
+                    dataBase.coinsDao().insertAllCoins(list.mapToLocalEntityList())
+                }
                 Log.d(TAG, "insertCoinsToDB: success")
             }
         } catch (e: Throwable) {
