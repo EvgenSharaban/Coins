@@ -8,8 +8,8 @@ import com.example.customviewwithoutcompose.core.networking.toDomainList
 import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.core.other.roundTo
 import com.example.customviewwithoutcompose.data.local.room.CoinsDataBase
-import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToDomainList
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToLocalEntityList
+import com.example.customviewwithoutcompose.data.local.room.entities.CoinRoomEntity
 import com.example.customviewwithoutcompose.data.network.ApiService
 import com.example.customviewwithoutcompose.data.network.entities.mappers.CoinDomainMapper
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
@@ -18,6 +18,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -87,7 +89,7 @@ class CoinsRepositoryImpl @Inject constructor(
                 }
             }
             .onSuccess { coins ->
-                insertCoinsToRoom(coins)
+                insertCoinsToDB(coins)
                 Log.d(TAG, "getCoins: success, size = ${coins.size}")
             }
             .onFailure { error ->
@@ -107,26 +109,26 @@ class CoinsRepositoryImpl @Inject constructor(
         }.toDomain(CoinDomainMapper)
     }
 
-    override suspend fun getCoinsFromRoom(): List<CoinDomain> {
+    override suspend fun getCoinsFromDB(): Flow<List<CoinRoomEntity>> {
         return try {
-            val list = dataBase.coinsDao().getAllCoins().mapToDomainList()
-            Log.d(TAG, "getCoinsFromRoom: ")
+            val list = dataBase.coinsDao().getAllCoins()
+            Log.d(TAG, "getCoinsFromDB: success")
             list
         } catch (e: Throwable) {
-            Log.d(TAG, "getCoinsFromRoom: failed, \nerror = $e")
-            emptyList()
+            Log.d(TAG, "getCoinsFromDB: failed, \nerror = $e")
+            flow { emptyList<CoinRoomEntity>() }
         }
     }
 
-    override suspend fun insertCoinsToRoom(list: List<CoinDomain>) {
+    override suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {
             withContext(Dispatchers.IO) {
                 dataBase.coinsDao().deleteAllCoins()
                 dataBase.coinsDao().insertAllCoins(list.mapToLocalEntityList())
-                Log.d(TAG, "insertCoinsToRoom: success")
+                Log.d(TAG, "insertCoinsToDB: success")
             }
         } catch (e: Throwable) {
-            Log.d(TAG, "insertCoinsToRoom: failed, \nerror = $e")
+            Log.d(TAG, "insertCoinsToDB: failed, \nerror = $e")
         }
     }
 

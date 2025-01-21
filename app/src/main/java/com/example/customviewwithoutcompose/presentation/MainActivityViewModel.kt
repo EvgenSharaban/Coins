@@ -13,7 +13,6 @@ import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.presentation.models.ModelForAdapter
 import com.example.customviewwithoutcompose.presentation.models.ModelForCustomView
 import com.example.customviewwithoutcompose.presentation.models.mappers.CoinUiModelMapper.mapToUiModel
-import com.example.customviewwithoutcompose.presentation.models.mappers.CoinUiModelMapper.mapToUiModelList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +44,8 @@ class MainActivityViewModel @Inject constructor(
         getCoins()
         Log.d(TAG, "getCoins: time 0")
 
+        observeData()
+
         viewModelScope.launch {
             _coinForCustomViewList.map { coins ->
                 coins.map { coin ->
@@ -60,19 +61,18 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun getCoins() {
+    private fun observeData() {
         viewModelScope.launch(Dispatchers.IO) {
-            val localCoins = coinsRepository.getCoinsFromRoom()
-            _coinForCustomViewList.update { localCoins.map { it.mapToUiModel() } }
+            coinsRepository.getCoinsFromDB().collect { localCoins ->
+                _coinForCustomViewList.update { localCoins.map { it.mapToUiModel() } }
+            }
         }
+    }
+
+    private fun getCoins() {
         viewModelScope.launch {
             if (hasInternetConnection()) {
-                coinsRepository.getCoinsFullEntity().onSuccess { coins ->
-                    val coinsList = coins.mapToUiModelList()
-                    if (_coinForCustomViewList.value != coinsList) {
-                        _coinForCustomViewList.update { coinsList }
-                    }
-                }
+                coinsRepository.getCoinsFullEntity()
             } else {
                 val message = context.getString(R.string.no_internet_connection)
                 _event.trySend(message)

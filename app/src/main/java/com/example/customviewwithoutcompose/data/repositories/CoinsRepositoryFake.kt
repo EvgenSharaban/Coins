@@ -3,8 +3,8 @@ package com.example.customviewwithoutcompose.data.repositories
 import android.util.Log
 import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.data.local.room.CoinsDataBase
-import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToDomainList
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToLocalEntityList
+import com.example.customviewwithoutcompose.data.local.room.entities.CoinRoomEntity
 import com.example.customviewwithoutcompose.data.repositories.CoinsRepositoryImpl.Companion.FILTERING_TYPE
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
@@ -13,6 +13,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -31,7 +33,7 @@ class CoinsRepositoryFake @Inject constructor(
             type = "coin",
             logo = "https://www.shutterstock.com/image-vector/crypto-currency-golden-coin-black-600nw-593193626.jpg",
             description = "The first and most popular cryptocurrency. The first and most popular cryptocurrency. The first and most popular cryptocurrency. The first and most popular cryptocurrency.",
-            startedAt = "2010-07-17T00:00:00Z",
+            startedAt = if (index == 3) " sjfs--" else "2010-07-17T00:00:00Z",
             price = 2525.7
         )
     }
@@ -60,7 +62,7 @@ class CoinsRepositoryFake @Inject constructor(
                     list
                 }
             }.onSuccess {
-                insertCoinsToRoom(it)
+                insertCoinsToDB(it)
             }
     }
 
@@ -83,26 +85,26 @@ class CoinsRepositoryFake @Inject constructor(
         }
     }
 
-    override suspend fun getCoinsFromRoom(): List<CoinDomain> {
+    override suspend fun getCoinsFromDB(): Flow<List<CoinRoomEntity>> {
         return try {
-            val list = dataBase.coinsDao().getAllCoins().mapToDomainList()
-            Log.d(TAG, "getCoinsFromRoom: ")
+            val list = dataBase.coinsDao().getAllCoins()
+            Log.d(TAG, "getCoinsFromDB: success")
             list
         } catch (e: Throwable) {
-            Log.d(TAG, "getCoinsFromRoom: failed, \nerror = $e")
-            emptyList()
+            Log.d(TAG, "getCoinsFromDB: failed, \nerror = $e")
+            flow { emptyList<CoinRoomEntity>() }
         }
     }
 
-    override suspend fun insertCoinsToRoom(list: List<CoinDomain>) {
+    override suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {
             withContext(Dispatchers.IO) {
                 dataBase.coinsDao().deleteAllCoins()
                 dataBase.coinsDao().insertAllCoins(list.mapToLocalEntityList())
-                Log.d(TAG, "insertCoinsToRoom: success")
+                Log.d(TAG, "insertCoinsToDB: success")
             }
         } catch (e: Throwable) {
-            Log.d(TAG, "insertCoinsToRoom: failed, \nerror = $e")
+            Log.d(TAG, "insertCoinsToDB: failed, \nerror = $e")
         }
     }
 }

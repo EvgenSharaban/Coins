@@ -1,6 +1,8 @@
 package com.example.customviewwithoutcompose.domain.repositories
 
+import com.example.customviewwithoutcompose.data.local.room.entities.CoinRoomEntity
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
+import kotlinx.coroutines.flow.Flow
 
 interface CoinsRepository {
 
@@ -12,7 +14,7 @@ interface CoinsRepository {
 
     suspend fun getTickerById(id: String): Result<CoinDomain>
 
-    suspend fun getCoinsFromRoom(): List<CoinDomain>
+    suspend fun getCoinsFromDB(): Flow<List<CoinRoomEntity>>
 
-    suspend fun insertCoinsToRoom(list: List<CoinDomain>)
+    suspend fun insertCoinsToDB(list: List<CoinDomain>)
 }

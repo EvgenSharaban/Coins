@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "coins")
-data class CoinLocalEntity(
+data class CoinRoomEntity(
     @PrimaryKey val id: String,
     val name: String,
     val symbol: String,
