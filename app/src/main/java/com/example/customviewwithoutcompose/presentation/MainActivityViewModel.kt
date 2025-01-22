@@ -61,6 +61,18 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun onItemToggle(item: ModelForAdapter) {
+        _coinForAdapterList.update { coins ->
+            coins.map { coin ->
+                if (coin.customViewModel.id == item.customViewModel.id) {
+                    coin.copy(isExpanded = !coin.isExpanded)
+                } else {
+                    coin
+                }
+            }
+        }
+    }
+
     private fun observeData() {
         viewModelScope.launch(Dispatchers.IO) {
             coinsRepository.getCoinsFromDB().collect { localCoins ->
@@ -94,15 +106,4 @@ class MainActivityViewModel @Inject constructor(
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
-    fun onItemToggle(item: ModelForAdapter) {
-        _coinForAdapterList.update { coins ->
-            coins.map { coin ->
-                if (coin.customViewModel.id == item.customViewModel.id) {
-                    coin.copy(isExpanded = !coin.isExpanded)
-                } else {
-                    coin
-                }
-            }
-        }
-    }
 }

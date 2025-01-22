@@ -3,6 +3,7 @@
 
     <declare-styleable name="RhombusView">
         <attr name="backColor" format="color" />
+        <attr name="cornerRadius" />
     </declare-styleable>
 
     <declare-styleable name="CustomView">

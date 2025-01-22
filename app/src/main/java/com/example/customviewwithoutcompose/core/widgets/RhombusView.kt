@@ -2,6 +2,7 @@ package com.example.customviewwithoutcompose.core.widgets
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.CornerPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.AttributeSet
@@ -31,6 +32,15 @@ class RhombusView @JvmOverloads constructor(
             invalidate()
         }
 
+    var cornerRadius: Float = 0f
+        set(value) {
+            field = value
+            pathEffect = CornerPathEffect(value)
+            invalidate()
+        }
+
+    private var pathEffect: CornerPathEffect? = CornerPathEffect(cornerRadius)
+
     init {
         gravity = Gravity.CENTER
 
@@ -43,6 +53,7 @@ class RhombusView @JvmOverloads constructor(
         ).apply {
             try {
                 backColor = getColor(R.styleable.RhombusView_backColor, 0xFFFF0000.toInt())
+                cornerRadius = getDimension(R.styleable.RhombusView_cornerRadius, 0f)
             } finally {
                 recycle()
             }
@@ -67,6 +78,8 @@ class RhombusView @JvmOverloads constructor(
         path.lineTo(0f, centerY) // left point
         path.close()
 
+        paint.pathEffect = pathEffect
         canvas.drawPath(path, paint)
+        paint.pathEffect = null
     }
 }
