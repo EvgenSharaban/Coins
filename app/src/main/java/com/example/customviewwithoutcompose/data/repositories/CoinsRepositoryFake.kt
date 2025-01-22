@@ -15,7 +15,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -23,7 +22,9 @@ class CoinsRepositoryFake @Inject constructor(
     private val dataBase: CoinsDataBase
 ) : CoinsRepository {
 
-    val fakeCoins = List(1000) { index ->
+    override val coins: Flow<List<CoinRoomEntity>> = dataBase.coinsDao().getAllCoins()
+
+    private val fakeCoins = List(1000) { index ->
         CoinDomain(
             id = (index + 1).toString(),
             name = "Bitcoin Fake",
@@ -44,13 +45,13 @@ class CoinsRepositoryFake @Inject constructor(
 //        return Result.success(fakeCoins)
 //    }
 
-    override suspend fun getCoinsFullEntity(): Result<List<CoinDomain>> {
+    override suspend fun fetchCoinsFullEntity(): Result<Unit> {
         return Result.success(fakeCoins)
             .mapCatching { coins ->
                 coroutineScope {
                     Log.d(TAG, "getCoins: time start")
                     val list = coins
-                        .filter { it.rank > 0 && it.isActive == true && it.type == FILTERING_TYPE }
+                        .filter { it.rank > 0 && it.isActive && it.type == FILTERING_TYPE }
                         .sortedBy { it.rank }
                         .map { coin ->
                             async(Dispatchers.IO) {
@@ -65,6 +66,7 @@ class CoinsRepositoryFake @Inject constructor(
             }.onSuccess {
                 insertCoinsToDB(it)
             }
+            .map { } // need for Result<Unit>
     }
 
     override suspend fun getCoinById(id: String): Result<CoinDomain> {
@@ -86,18 +88,7 @@ class CoinsRepositoryFake @Inject constructor(
         }
     }
 
-    override suspend fun getCoinsFromDB(): Flow<List<CoinRoomEntity>> {
-        return try {
-            val list = dataBase.coinsDao().getAllCoins()
-            Log.d(TAG, "getCoinsFromDB: success")
-            list
-        } catch (e: Throwable) {
-            Log.d(TAG, "getCoinsFromDB: failed, \nerror = $e")
-            flow { emptyList<CoinRoomEntity>() }
-        }
-    }
-
-    override suspend fun insertCoinsToDB(list: List<CoinDomain>) {
+    private suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {
             withContext(Dispatchers.IO) {
                 dataBase.withTransaction {

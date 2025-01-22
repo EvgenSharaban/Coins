@@ -12,15 +12,14 @@ fun Double.roundTo(numbersAfterPoint: Int): Double {
 fun formatDate(date: String): String {
     val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
     val outputFormat = SimpleDateFormat("yyyy.MM.dd", Locale.US)
-    return if (date.isEmpty()) {
+    if (date.isEmpty()) {
         Log.w(TAG, "formatDate: empty string to format")
+        return ""
+    }
+    return try {
+        outputFormat.format(inputFormat.parse(date) ?: date)
+    } catch (e: Throwable) {
+        Log.w(TAG, "formatDate: failed, \nerror = $e")
         ""
-    } else {
-        try {
-            outputFormat.format(inputFormat.parse(date) ?: date)
-        } catch (e: Throwable) {
-            Log.w(TAG, "formatDate: failed, \nerror = $e")
-            ""
-        }
     }
 }

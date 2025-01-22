@@ -20,7 +20,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -28,6 +27,8 @@ class CoinsRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val dataBase: CoinsDataBase
 ) : CoinsRepository {
+
+    override val coins: Flow<List<CoinRoomEntity>> = dataBase.coinsDao().getAllCoins()
 
 //    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
 //        return safeApiCallList {
@@ -37,7 +38,7 @@ class CoinsRepositoryImpl @Inject constructor(
 //            .mapCatching { coins ->
 //                Log.d(TAG, "getCoins: time start")
 //                val list = coins
-//                    .filter { it.rank > 0 && it.isActive == true && it.type == FILTERING_TYPE }
+//                    .filter { it.rank > 0 && it.isActive && it.type == FILTERING_TYPE }
 //                    .sortedBy { it.rank }
 //                    .take(MAX_COUNT_ITEMS)
 //
@@ -53,41 +54,13 @@ class CoinsRepositoryImpl @Inject constructor(
 //            }
 //    }
 
-    override suspend fun getCoinsFullEntity(): Result<List<CoinDomain>> {
+    override suspend fun fetchCoinsFullEntity(): Result<Unit> {
         return safeApiCallList {
             apiService.getCoins()
         }
             .toDomainList(CoinDomainMapper)
             .mapCatching { coins ->
-                coroutineScope {
-                    Log.d(TAG, "getCoins: time start")
-                    val list = coins
-                        .filter { it.rank > 0 && it.isActive == true && it.type == FILTERING_TYPE }
-                        .sortedBy { it.rank }
-                        .take(MAX_COUNT_ITEMS)
-                        .map { coin ->
-                            async {
-                                getCoinById(coin.id)
-                                    .mapCatching { fetchedCoin ->
-                                        async {
-                                            val price = getTickerById(fetchedCoin.id).getOrThrow().price
-                                            val roundedPrice = price.roundTo(NUMBERS_OF_DIGITS_PRICE_AFTER_POINT)
-                                            fetchedCoin.copy(price = roundedPrice)
-                                        }.await()
-                                    }
-                            }
-                        }
-                        .awaitAll()
-                        .map { result ->
-                            result.getOrElse { error ->
-                                Log.e(TAG, "Error fetching coin by id: $error")
-                                null
-                            }
-                        }
-                        .filterNotNull()
-                    Log.d(TAG, "getCoins: time end")
-                    list
-                }
+                getDetailInfoByList(coins)
             }
             .onSuccess { coins ->
                 insertCoinsToDB(coins)
@@ -96,6 +69,7 @@ class CoinsRepositoryImpl @Inject constructor(
             .onFailure { error ->
                 Log.d(TAG, "getCoins(): failure, \nerror = $error")
             }
+            .map { } // need for Result<Unit>
     }
 
     override suspend fun getCoinById(id: String): Result<CoinDomain> {
@@ -110,18 +84,36 @@ class CoinsRepositoryImpl @Inject constructor(
         }.toDomain(CoinDomainMapper)
     }
 
-    override suspend fun getCoinsFromDB(): Flow<List<CoinRoomEntity>> {
-        return try {
-            val list = dataBase.coinsDao().getAllCoins()
-            Log.d(TAG, "getCoinsFromDB: success")
-            list
-        } catch (e: Throwable) {
-            Log.d(TAG, "getCoinsFromDB: failed, \nerror = $e")
-            flow { emptyList<CoinRoomEntity>() }
-        }
+    private suspend fun getDetailInfoByList(coins: List<CoinDomain>): List<CoinDomain> = coroutineScope {
+        Log.d(TAG, "getCoins: time start")
+        val list = coins
+            .filter { it.rank > 0 && it.isActive && it.type == FILTERING_TYPE }
+            .sortedBy { it.rank }
+            .take(MAX_COUNT_ITEMS)
+            .map { coin ->
+                async {
+                    getDetailInfo(coin)
+                }
+            }
+            .awaitAll()
+            .mapNotNull { result ->
+                result.getOrElse { error ->
+                    Log.e(TAG, "Error fetching coin by id: $error")
+                    null
+                }
+            }
+        Log.d(TAG, "getCoins: time end")
+        list
     }
 
-    override suspend fun insertCoinsToDB(list: List<CoinDomain>) {
+    private suspend fun getDetailInfo(coin: CoinDomain): Result<CoinDomain> = getCoinById(coin.id)
+        .mapCatching { fetchedCoin ->
+            val price = getTickerById(fetchedCoin.id).getOrThrow().price
+            val roundedPrice = price.roundTo(NUMBERS_OF_DIGITS_PRICE_AFTER_POINT)
+            fetchedCoin.copy(price = roundedPrice)
+        }
+
+    private suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {
             withContext(Dispatchers.IO) {
                 dataBase.withTransaction {

@@ -18,10 +18,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,9 +34,19 @@ class MainActivityViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val _coinForCustomViewList = MutableStateFlow<List<ModelForCustomView>>(emptyList())
-    private val _coinForAdapterList = MutableStateFlow<List<ModelForAdapter>>(emptyList())
-    val coinsList = _coinForAdapterList.asStateFlow()
+    private val coinForCustomViewList = MutableStateFlow<List<ModelForCustomView>>(emptyList())
+
+    private val expandedIds = MutableStateFlow<Set<String>>(emptySet())
+
+    val coinsList: StateFlow<List<ModelForAdapter>> =
+        combine(coinForCustomViewList, expandedIds) { coins, expandedIds ->
+            coins.map { coin ->
+                ModelForAdapter(
+                    customViewModel = coin,
+                    isExpanded = coin.id in expandedIds
+                )
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _event = Channel<String>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
@@ -43,43 +54,26 @@ class MainActivityViewModel @Inject constructor(
     init {
         getCoins()
         Log.d(TAG, "getCoins: time 0")
-
         observeData()
-
-        viewModelScope.launch {
-            _coinForCustomViewList.map { coins ->
-                coins.map { coin ->
-                    ModelForAdapter(
-                        customViewModel = coin,
-                        isExpanded = false
-                    )
-                }
-            }
-                .collectLatest { list ->
-                    _coinForAdapterList.update { list }
-                }
-        }
     }
 
     fun onItemToggle(item: ModelForAdapter) {
-        _coinForAdapterList.update { coins ->
-            coins.map { coin ->
-                if (coin.customViewModel.id == item.customViewModel.id) {
-                    coin.copy(isExpanded = !coin.isExpanded)
-                } else {
-                    coin
-                }
+        expandedIds.update {
+            if (expandedIds.value.contains(item.customViewModel.id)) {
+                it.minus(item.customViewModel.id)
+            } else {
+                it.plus(item.customViewModel.id)
             }
         }
     }
 
     private fun observeData() {
         viewModelScope.launch(Dispatchers.IO) {
-            coinsRepository.getCoinsFromDB().collect { localCoins ->
+            coinsRepository.coins.collect { localCoins ->
                 val coinsList = localCoins.map { it.mapToUiModel() }
-                Log.d(TAG, "observeData: _coinForCustomViewList size = ${_coinForCustomViewList.value.size}, coinsList size = ${coinsList.size}")
-                if (_coinForCustomViewList.value != coinsList) {
-                    _coinForCustomViewList.update { coinsList }
+                Log.d(TAG, "observeData: _coinForCustomViewList size = ${coinForCustomViewList.value.size}, coinsList size = ${coinsList.size}")
+                if (coinForCustomViewList.value != coinsList) {
+                    coinForCustomViewList.update { coinsList }
                 }
             }
         }
@@ -88,7 +82,7 @@ class MainActivityViewModel @Inject constructor(
     private fun getCoins() {
         viewModelScope.launch {
             if (hasInternetConnection()) {
-                coinsRepository.getCoinsFullEntity()
+                coinsRepository.fetchCoinsFullEntity()
             } else {
                 val message = context.getString(R.string.no_internet_connection)
                 _event.trySend(message)
