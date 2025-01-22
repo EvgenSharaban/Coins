@@ -7,7 +7,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
@@ -51,20 +53,19 @@ class MainActivity : AppCompatActivity() {
 
         binding.root.updatePadding(true, false)
 
-    }
-
-    override fun onStart() {
-        super.onStart()
-
         lifecycleScope.launch(Dispatchers.Main.immediate) {
-            viewModel.event.collectLatest { message ->
-                showToast(message)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.event.collectLatest { message ->
+                    showToast(message)
+                }
             }
         }
 
         lifecycleScope.launch {
-            viewModel.coinsList.collectLatest { list ->
-                coinsAdapter.submitList(list)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.coinsList.collectLatest { list ->
+                    coinsAdapter.submitList(list)
+                }
             }
         }
     }
