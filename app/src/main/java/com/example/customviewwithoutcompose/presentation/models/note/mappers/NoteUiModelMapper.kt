@@ -11,4 +11,11 @@ object NoteUiModelMapper {
             note = this.note
         )
     }
+
+    fun ModelForNoteCustomView.mapToRoomModel(): NoteRoomEntity {
+        return NoteRoomEntity(
+            id = this.id,
+            note = this.note
+        )
+    }
 }

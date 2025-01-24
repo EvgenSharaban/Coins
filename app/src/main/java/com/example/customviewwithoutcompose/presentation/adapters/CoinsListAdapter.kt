@@ -12,9 +12,11 @@ import com.example.customviewwithoutcompose.core.other.formatDate
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
 import com.example.customviewwithoutcompose.databinding.ItemNoteBinding
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAdapter
+import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
 
 class CoinsListAdapter(
-    private val onCoinClicked: (item: ModelForAdapter) -> Unit
+    private val onCoinClicked: (item: ModelForAdapter) -> Unit,
+    private val onNoteClicked: (item: ModelForNoteCustomView) -> Unit
 ) :
     ListAdapter<CustomListItem, RecyclerView.ViewHolder>(CoinDiffUtil()) {
 
@@ -30,7 +32,7 @@ class CoinsListAdapter(
         return when (viewType) {
             TYPE_NOTE -> {
                 val view = inflater.inflate(R.layout.item_note, parent, false)
-                NoteViewHolder(ItemNoteBinding.bind(view))
+                NoteViewHolder(ItemNoteBinding.bind(view), onNoteClicked)
             }
 
             TYPE_COIN -> {
@@ -65,8 +67,18 @@ class CoinsListAdapter(
     }
 
     inner class NoteViewHolder(
-        private val binding: ItemNoteBinding
+        private val binding: ItemNoteBinding,
+        onClick: (item: ModelForNoteCustomView) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            itemView.setOnLongClickListener {
+                val item = (getItem(adapterPosition) as CustomListItem.NoteItem).note
+                onClick(item)
+                true
+            }
+        }
+
         fun bind(note: String) {
             binding.tvNote.text = note
         }

@@ -93,6 +93,12 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun deleteNote(note: NoteRoomEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            coinsRepository.deleteNote(note)
+        }
+    }
+
     private fun observeData() {
         viewModelScope.launch(Dispatchers.IO) {
             coinsRepository.coins.collect { localCoins ->

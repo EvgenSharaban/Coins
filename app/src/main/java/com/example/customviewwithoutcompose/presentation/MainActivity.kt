@@ -1,7 +1,10 @@
 package com.example.customviewwithoutcompose.presentation
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +22,8 @@ import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.presentation.adapters.CoinsListAdapter
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAdapter
+import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
+import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToRoomModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -31,7 +36,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainActivityViewModel by viewModels()
     private val coinsAdapter = CoinsListAdapter(
-        onCoinClicked = ::onItemCoinClicked
+        onCoinClicked = ::onItemCoinClicked,
+        onNoteClicked = { note ->
+            onNoteClicked(note)
+        }
     )
     private lateinit var coinsDecorator: ItemDecoratorCoinsList
 
@@ -100,11 +108,17 @@ class MainActivity : AppCompatActivity() {
         viewModel.onItemToggle(item)
     }
 
+    private fun onNoteClicked(note: ModelForNoteCustomView) {
+        showDeleteNoteDialog(note)
+    }
+
     private fun showAddNoteDialog() {
         val dialogView = View.inflate(this, R.layout.dialog_add_note, null)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val etNoteInput = dialogView.findViewById<AppCompatEditText>(R.id.etItemInput)
         val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
@@ -124,6 +138,39 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * WIDTH_WITH_PERCENT).toInt()
+        dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    private fun showDeleteNoteDialog(note: ModelForNoteCustomView) {
+        val dialogView = View.inflate(this, R.layout.dialog_delete_note, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        btnConfirm.setOnClickListener {
+            viewModel.deleteNote(note.mapToRoomModel())
+            dialog.dismiss()
+        }
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+
+        val width = (resources.displayMetrics.widthPixels * WIDTH_WITH_PERCENT).toInt()
+        dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    companion object {
+
+        private const val WIDTH_WITH_PERCENT = 0.9
     }
 
 }
