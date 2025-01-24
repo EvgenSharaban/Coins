@@ -6,6 +6,7 @@ import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.data.local.room.CoinsDataBase
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToLocalEntityList
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinRoomEntity
+import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.data.repositories.CoinsRepositoryImpl.Companion.FILTERING_TYPE
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
@@ -23,8 +24,17 @@ class CoinsRepositoryFake @Inject constructor(
 ) : CoinsRepository {
 
     override val coins: Flow<List<CoinRoomEntity>> = dataBase.coinsDao().getAllCoins()
+    override val notes: Flow<List<NoteRoomEntity>> = dataBase.coinsDao().getAllNotes()
+//    override val notes: Flow<List<NoteRoomEntity>> = flowOf(
+//        List(8) { index ->
+//            NoteRoomEntity(
+//                id = (index + 1).toString(),
+//                note = "Note ${index + 1} with some description"
+//            )
+//        }
+//    )
 
-    private val fakeCoins = List(1000) { index ->
+    private val fakeCoins = List(100) { index ->
         CoinDomain(
             id = (index + 1).toString(),
             name = "Bitcoin Fake",
@@ -85,6 +95,24 @@ class CoinsRepositoryFake @Inject constructor(
             Result.success(coin)
         } else {
             Result.failure(Exception("Coin with id: $id not found"))
+        }
+    }
+
+    override suspend fun addNote(note: NoteRoomEntity): Result<Unit> {
+        try {
+            dataBase.coinsDao().addNote(note)
+            return Result.success(Unit)
+        } catch (e: Throwable) {
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteNote(note: NoteRoomEntity): Result<Unit> {
+        return try {
+            dataBase.coinsDao().deleteNote(note)
+            Result.success(Unit)
+        } catch (e: Throwable) {
+            Result.failure(e)
         }
     }
 

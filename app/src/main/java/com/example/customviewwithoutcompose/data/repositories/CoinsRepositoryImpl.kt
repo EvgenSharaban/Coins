@@ -11,6 +11,7 @@ import com.example.customviewwithoutcompose.core.other.roundTo
 import com.example.customviewwithoutcompose.data.local.room.CoinsDataBase
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToLocalEntityList
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinRoomEntity
+import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.data.network.ApiService
 import com.example.customviewwithoutcompose.data.network.entities.mappers.CoinDomainMapper
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
@@ -29,6 +30,7 @@ class CoinsRepositoryImpl @Inject constructor(
 ) : CoinsRepository {
 
     override val coins: Flow<List<CoinRoomEntity>> = dataBase.coinsDao().getAllCoins()
+    override val notes: Flow<List<NoteRoomEntity>> = dataBase.coinsDao().getAllNotes()
 
 //    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
 //        return safeApiCallList {
@@ -112,6 +114,24 @@ class CoinsRepositoryImpl @Inject constructor(
             val roundedPrice = price.roundTo(NUMBERS_OF_DIGITS_PRICE_AFTER_POINT)
             fetchedCoin.copy(price = roundedPrice)
         }
+
+    override suspend fun addNote(note: NoteRoomEntity): Result<Unit> {
+        try {
+            dataBase.coinsDao().addNote(note)
+            return Result.success(Unit)
+        } catch (e: Throwable) {
+            return Result.failure(e)
+        }
+    }
+
+    override suspend fun deleteNote(note: NoteRoomEntity): Result<Unit> {
+        return try {
+            dataBase.coinsDao().deleteNote(note)
+            Result.success(Unit)
+        } catch (e: Throwable) {
+            Result.failure(e)
+        }
+    }
 
     private suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {

@@ -10,34 +10,65 @@ import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.formatDate
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.presentation.models.ModelForAdapter
+import com.example.customviewwithoutcompose.databinding.ItemNoteBinding
+import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAdapter
 
-class CoinsListAdapter(private val onClick: (item: ModelForAdapter) -> Unit) :
-    ListAdapter<ModelForAdapter, CoinsListAdapter.CoinViewHolder>(CoinDiffUtil()) {
+class CoinsListAdapter(
+    private val onCoinClicked: (item: ModelForAdapter) -> Unit
+) :
+    ListAdapter<CustomListItem, RecyclerView.ViewHolder>(CoinDiffUtil()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoinViewHolder {
-
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.custom_view, parent, false)
-        return CoinViewHolder(CustomViewBinding.bind(view), onClick)
-    }
-
-    override fun onBindViewHolder(holder: CoinViewHolder, position: Int) {
-        getItem(position)?.let {
-            holder.bind(it)
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is CustomListItem.NoteItem -> TYPE_NOTE
+            is CustomListItem.CoinItem -> TYPE_COIN
         }
     }
 
-    override fun onBindViewHolder(holder: CoinViewHolder, position: Int, payloads: List<Any?>) {
-        if (payloads.isEmpty() || payloads[0] == null) {
-            super.onBindViewHolder(holder, position, payloads)
-        } else {
-            for (payload in payloads) {
-                when (payload) {
-                    DESCRIPTION_VISIBILITY_PAYLOAD -> {
-                        holder.toggleVisibility(getItem(position).isExpanded)
-                    }
-                }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            TYPE_NOTE -> {
+                val view = inflater.inflate(R.layout.item_note, parent, false)
+                NoteViewHolder(ItemNoteBinding.bind(view))
             }
+
+            TYPE_COIN -> {
+                val view = inflater.inflate(R.layout.custom_view, parent, false)
+                CoinViewHolder(CustomViewBinding.bind(view), onCoinClicked)
+            }
+
+            else -> throw IllegalArgumentException("Invalid view type")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is NoteViewHolder -> {
+                val noteItem = getItem(position) as CustomListItem.NoteItem
+                holder.bind(noteItem.note.note)
+            }
+
+            is CoinViewHolder -> {
+                val coinItem = getItem(position) as CustomListItem.CoinItem
+                holder.bind(coinItem.coin)
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<Any?>) {
+        if (holder is CoinViewHolder && payloads.isNotEmpty() && payloads[0] == DESCRIPTION_VISIBILITY_PAYLOAD) {
+            holder.toggleVisibility((getItem(position) as CustomListItem.CoinItem).coin.isExpanded)
+        } else {
+            super.onBindViewHolder(holder, position, payloads)
+        }
+    }
+
+    inner class NoteViewHolder(
+        private val binding: ItemNoteBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(note: String) {
+            binding.tvNote.text = note
         }
     }
 
@@ -49,7 +80,8 @@ class CoinsListAdapter(private val onClick: (item: ModelForAdapter) -> Unit) :
 
         init {
             itemView.setOnClickListener {
-                onClick(getItem(adapterPosition))
+                val item = (getItem(adapterPosition) as CustomListItem.CoinItem).coin
+                onClick(item)
             }
         }
 
@@ -78,30 +110,38 @@ class CoinsListAdapter(private val onClick: (item: ModelForAdapter) -> Unit) :
         }
     }
 
-    private class CoinDiffUtil : DiffUtil.ItemCallback<ModelForAdapter>() {
-        override fun areItemsTheSame(
-            oldItem: ModelForAdapter,
-            newItem: ModelForAdapter
-        ): Boolean {
-            return oldItem.customViewModel.id == newItem.customViewModel.id
+    private class CoinDiffUtil : DiffUtil.ItemCallback<CustomListItem>() {
+        override fun areItemsTheSame(oldItem: CustomListItem, newItem: CustomListItem): Boolean {
+            return when {
+                oldItem is CustomListItem.NoteItem && newItem is CustomListItem.NoteItem -> oldItem.note == newItem.note
+                oldItem is CustomListItem.CoinItem && newItem is CustomListItem.CoinItem ->
+                    oldItem.coin.customViewModel.id == newItem.coin.customViewModel.id
+
+                else -> false
+            }
         }
 
         override fun areContentsTheSame(
-            oldItem: ModelForAdapter,
-            newItem: ModelForAdapter
+            oldItem: CustomListItem,
+            newItem: CustomListItem
         ): Boolean {
             return oldItem == newItem
         }
 
-        override fun getChangePayload(oldItem: ModelForAdapter, newItem: ModelForAdapter): Any? {
-            return if (oldItem.isExpanded != newItem.isExpanded)
-                DESCRIPTION_VISIBILITY_PAYLOAD
-            else null
+        override fun getChangePayload(oldItem: CustomListItem, newItem: CustomListItem): Any? {
+            if (oldItem is CustomListItem.CoinItem && newItem is CustomListItem.CoinItem) {
+                if (oldItem.coin.isExpanded != newItem.coin.isExpanded) {
+                    return DESCRIPTION_VISIBILITY_PAYLOAD
+                }
+            }
+            return null
         }
     }
 
     companion object {
 
         private const val DESCRIPTION_VISIBILITY_PAYLOAD = "Description visibility changed"
+        private const val TYPE_NOTE = 1
+        private const val TYPE_COIN = 2
     }
 }

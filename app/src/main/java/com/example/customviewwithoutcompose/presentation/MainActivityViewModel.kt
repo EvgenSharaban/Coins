@@ -9,10 +9,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.TAG
+import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
-import com.example.customviewwithoutcompose.presentation.models.ModelForAdapter
-import com.example.customviewwithoutcompose.presentation.models.ModelForCustomView
-import com.example.customviewwithoutcompose.presentation.models.mappers.CoinUiModelMapper.mapToUiModel
+import com.example.customviewwithoutcompose.presentation.adapters.CustomListItem
+import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAdapter
+import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinCustomView
+import com.example.customviewwithoutcompose.presentation.models.coin.mappers.CoinUiModelMapper.mapToUiModel
+import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
+import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToNoteUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +29,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.collections.map
 
@@ -34,22 +39,32 @@ class MainActivityViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    private val coinForCustomViewList = MutableStateFlow<List<ModelForCustomView>>(emptyList())
+    val noteList = MutableStateFlow<List<ModelForNoteCustomView>>(emptyList())
+    private val coinList = MutableStateFlow<List<ModelForCoinCustomView>>(emptyList())
+    private val expandedCoinItemsIds = MutableStateFlow<Set<String>>(emptySet())
 
-    private val expandedIds = MutableStateFlow<Set<String>>(emptySet())
-
-    val coinsList: StateFlow<List<ModelForAdapter>> =
-        combine(coinForCustomViewList, expandedIds) { coins, expandedIds ->
-            coins.map { coin ->
-                ModelForAdapter(
-                    customViewModel = coin,
-                    isExpanded = coin.id in expandedIds
+    val recyclerItemsList: StateFlow<List<CustomListItem>> =
+        combine(noteList, coinList, expandedCoinItemsIds) { notes, coins, expandedIds ->
+            val noteItems = notes.map {
+                CustomListItem.NoteItem(it)
+            }
+            val coinItems = coins.map { coin ->
+                CustomListItem.CoinItem(
+                    ModelForAdapter(
+                        customViewModel = coin,
+                        isExpanded = coin.id in expandedIds
+                    )
                 )
             }
+            Log.d(TAG, "notes items size = ${noteItems.size}")
+            noteItems.plus(coinItems)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _event = Channel<String>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
+
+    private val _needToScroll = Channel<Boolean>(Channel.BUFFERED)
+    val needToScroll = _needToScroll.receiveAsFlow()
 
     init {
         getCoins()
@@ -58,8 +73,8 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onItemToggle(item: ModelForAdapter) {
-        expandedIds.update {
-            if (expandedIds.value.contains(item.customViewModel.id)) {
+        expandedCoinItemsIds.update {
+            if (expandedCoinItemsIds.value.contains(item.customViewModel.id)) {
                 it.minus(item.customViewModel.id)
             } else {
                 it.plus(item.customViewModel.id)
@@ -67,13 +82,35 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun addNote(noteText: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val note = NoteRoomEntity(
+                id = UUID.randomUUID().toString(),
+                note = noteText
+            )
+            coinsRepository.addNote(note)
+            _needToScroll.trySend(true)
+        }
+    }
+
     private fun observeData() {
         viewModelScope.launch(Dispatchers.IO) {
             coinsRepository.coins.collect { localCoins ->
                 val coinsList = localCoins.map { it.mapToUiModel() }
-                Log.d(TAG, "observeData: _coinForCustomViewList size = ${coinForCustomViewList.value.size}, coinsList size = ${coinsList.size}")
-                if (coinForCustomViewList.value != coinsList) {
-                    coinForCustomViewList.update { coinsList }
+                Log.d(TAG, "observeData: _coinForCustomViewList size = ${coinList.value.size}, coinsList size = ${coinsList.size}")
+                if (coinList.value != coinsList) {
+                    coinList.update { coinsList }
+                }
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            coinsRepository.notes.collect { localNotes ->
+                Log.d(TAG, "observeData: notes size = ${localNotes.size}")
+                noteList.update {
+                    localNotes.map { note ->
+                        note.mapToNoteUiModel()
+                    }
                 }
             }
         }

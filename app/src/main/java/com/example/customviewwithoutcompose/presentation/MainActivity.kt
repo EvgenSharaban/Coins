@@ -1,10 +1,14 @@
 package com.example.customviewwithoutcompose.presentation
 
 import android.os.Bundle
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
@@ -14,9 +18,10 @@ import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.presentation.adapters.CoinsListAdapter
-import com.example.customviewwithoutcompose.presentation.models.ModelForAdapter
+import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -26,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainActivityViewModel by viewModels()
     private val coinsAdapter = CoinsListAdapter(
-        onClick = ::onItemClicked
+        onCoinClicked = ::onItemCoinClicked
     )
     private lateinit var coinsDecorator: ItemDecoratorCoinsList
 
@@ -53,6 +58,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.root.updatePadding(true, false)
 
+        binding.fabAddNote.setOnClickListener {
+            showAddNoteDialog()
+        }
+
         lifecycleScope.launch(Dispatchers.Main.immediate) {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.event.collectLatest { message ->
@@ -61,9 +70,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        lifecycleScope.launch(Dispatchers.Main) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.needToScroll.collectLatest { needToScroll ->
+                    if (needToScroll) {
+                        val noteListSize = viewModel.noteList.value.size
+                        val lastPosition = if (noteListSize > 0) noteListSize - 1 else 0
+                        delay(50)
+                        binding.rvCoins.scrollToPosition(lastPosition)
+                    }
+                }
+            }
+        }
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.coinsList.collectLatest { list ->
+                viewModel.recyclerItemsList.collectLatest { list ->
                     coinsAdapter.submitList(list)
                 }
             }
@@ -74,8 +96,34 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun onItemClicked(item: ModelForAdapter) {
+    private fun onItemCoinClicked(item: ModelForAdapter) {
         viewModel.onItemToggle(item)
+    }
+
+    private fun showAddNoteDialog() {
+        val dialogView = View.inflate(this, R.layout.dialog_add_note, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        val etNoteInput = dialogView.findViewById<AppCompatEditText>(R.id.etItemInput)
+        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        btnConfirm.setOnClickListener {
+            val noteText = etNoteInput.text.toString().trim()
+            if (noteText.isNotEmpty()) {
+                viewModel.addNote(noteText)
+                dialog.dismiss()
+            } else {
+                Toast.makeText(this, "Please enter a note", Toast.LENGTH_SHORT).show()
+            }
+        }
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
 }

@@ -1,9 +1,9 @@
-package com.example.customviewwithoutcompose.presentation.models
+package com.example.customviewwithoutcompose.presentation.models.coin
 
 import androidx.annotation.StyleRes
 import com.example.customviewwithoutcompose.R
 
-data class ModelForCustomView(
+data class ModelForCoinCustomView(
     val id: String,
     val rank: Int,
     @StyleRes val rankTextAppearance: Int = R.style.RankTextAppearance,
@@ -23,7 +23,7 @@ data class ModelForCustomView(
 
     companion object {
 
-        val DEFAULT = ModelForCustomView(
+        val DEFAULT = ModelForCoinCustomView(
             id = "",
             rank = 0,
             descriptionText = "",

@@ -1,12 +1,12 @@
-package com.example.customviewwithoutcompose.presentation.models.mappers
+package com.example.customviewwithoutcompose.presentation.models.coin.mappers
 
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinRoomEntity
-import com.example.customviewwithoutcompose.presentation.models.ModelForCustomView
+import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinCustomView
 
 object CoinUiModelMapper {
 
-    fun CoinRoomEntity.mapToUiModel(): ModelForCustomView {
-        return ModelForCustomView(
+    fun CoinRoomEntity.mapToUiModel(): ModelForCoinCustomView {
+        return ModelForCoinCustomView(
             id = this.id,
             rank = this.rank,
             nameText = this.name,
