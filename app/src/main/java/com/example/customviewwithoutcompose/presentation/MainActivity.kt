@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -118,8 +119,6 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogView)
             .create()
 
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
         val etNoteInput = dialogView.findViewById<AppCompatEditText>(R.id.etItemInput)
         val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
@@ -139,8 +138,7 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
 
-        val width = (resources.displayMetrics.widthPixels * WIDTH_WITH_PERCENT).toInt()
-        dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setDialogWindow()
     }
 
     private fun showDeleteNoteDialog(note: ModelForNoteCustomView) {
@@ -148,8 +146,6 @@ class MainActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
-
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
@@ -164,8 +160,13 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
 
+        dialog.window?.setDialogWindow()
+    }
+
+    private fun Window?.setDialogWindow() {
+        this?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val width = (resources.displayMetrics.widthPixels * WIDTH_WITH_PERCENT).toInt()
-        dialog.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        this?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     companion object {
