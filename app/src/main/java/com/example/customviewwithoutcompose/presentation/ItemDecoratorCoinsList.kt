@@ -16,20 +16,16 @@ class ItemDecoratorCoinsList(
     ) {
         super.getItemOffsets(outRect, view, parent, state)
 
+        val adapter = parent.adapter ?: return
         val itemPosition = parent.getChildAdapterPosition(view)
-
-        /** cast margin in dp to Int */
-//        val bottomSpase = TypedValue.applyDimension(
-//            TypedValue.COMPLEX_UNIT_DIP,
-//            bottomValueInDPLastItem.toFloat(),
-//            view.resources.displayMetrics
-//        ).toInt()
+        if (itemPosition == RecyclerView.NO_POSITION) return
 
         val bottomSpase = view.resources.getDimensionPixelSize(bottomMarginResId)
 
         /** adding marginBottom to last item */
         when (itemPosition) {
-            state.itemCount - 1 -> outRect.bottom = bottomSpase
+            adapter.itemCount - 1 -> outRect.bottom = bottomSpase
+            else -> outRect.bottom = 0
         }
     }
 }
