@@ -71,16 +71,11 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.messageForUser.collectLatest { message ->
-                    showToast(message)
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.positionToScrollingList.collectLatest { position ->
-                    binding.rvCoins.scrollToPosition(position)
+                viewModel.event.collectLatest { event ->
+                    when (event) {
+                        is Events.MessageForUser -> showToast(event.message)
+                        is Events.PositionToScrolling -> binding.rvCoins.scrollToPosition(event.position)
+                    }
                 }
             }
         }

@@ -62,11 +62,8 @@ class MainActivityViewModel @Inject constructor(
             noteItems.plus(coinItems)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _messageForUser = Channel<String>(Channel.BUFFERED)
-    val messageForUser = _messageForUser.receiveAsFlow()
-
-    private val _positionToScrollingList = Channel<Int>(Channel.BUFFERED)
-    val positionToScrollingList = _positionToScrollingList.receiveAsFlow()
+    private val _event = Channel<Events>(Channel.BUFFERED)
+    val event = _event.receiveAsFlow()
 
     init {
         getCoins()
@@ -130,7 +127,7 @@ class MainActivityViewModel @Inject constructor(
                 coinsRepository.fetchCoinsFullEntity()
             } else {
                 val message = context.getString(R.string.no_internet_connection)
-                _messageForUser.send(message)
+                _event.send(Events.MessageForUser(message))
                 Log.d(TAG, message)
             }
         }
@@ -147,10 +144,10 @@ class MainActivityViewModel @Inject constructor(
 
     private suspend fun setAddedPositionToChannel() {
         delay(50)
-        val noteListSize = if (noteList.value.isNotEmpty()) {
+        val position = if (noteList.value.isNotEmpty()) {
             noteList.value.size - 1
         } else 0
-        _positionToScrollingList.send(noteListSize)
+        _event.send(Events.PositionToScrolling(position))
     }
 
 }
