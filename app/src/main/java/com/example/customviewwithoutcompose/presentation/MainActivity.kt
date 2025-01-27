@@ -13,8 +13,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -36,39 +34,45 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
     private val coinsAdapter = CoinsListAdapter(
         onCoinClicked = ::onItemCoinClicked,
-        onNoteLongClicked = { note ->
-            onNoteLongClicked(note)
-        }
+        onNoteLongClicked = ::onNoteLongClicked
     )
-    private lateinit var coinsDecorator: ItemDecoratorCoinsList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        coinsDecorator = ItemDecoratorCoinsList(R.dimen.bottom_margin_last)
+        initBinding()
+        setupEdgeToEdgeInsets()
+        initCoinsRecyclerView()
+        setupListeners()
+        setupObservers()
+    }
 
+    private fun initBinding() {
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
         }
+    }
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    private fun setupEdgeToEdgeInsets() {
+        binding.root.updatePadding(true, false)
+    }
 
+    private fun initCoinsRecyclerView() {
+        val coinsDecorator = ItemDecoratorCoinsList(R.dimen.bottom_margin_last)
         binding.rvCoins.apply {
             adapter = coinsAdapter
             addItemDecoration(coinsDecorator)
         }
+    }
 
-        binding.root.updatePadding(true, false)
-
+    private fun setupListeners() {
         binding.fabAddNote.setOnClickListener {
             showAddNoteDialog()
         }
+    }
 
+    private fun setupObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.event.collectLatest { event ->

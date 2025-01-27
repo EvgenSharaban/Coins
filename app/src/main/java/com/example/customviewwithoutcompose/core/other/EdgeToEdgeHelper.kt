@@ -15,16 +15,15 @@ fun View.updatePadding(
     updatePadding(top = 0, bottom = 0)
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, windowInsets ->
         val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-        val insetsBottomWithAdditional = additionalBottomInset
 
         when {
             needUpdateTop && needUpdateBottom -> view.updatePadding(
                 top = insets.top + additionalTopInset,
-                bottom = insetsBottomWithAdditional
+                bottom = additionalBottomInset
             )
 
             needUpdateTop -> view.updatePadding(top = insets.top + additionalTopInset)
-            needUpdateBottom -> view.updatePadding(bottom = insetsBottomWithAdditional)
+            needUpdateBottom -> view.updatePadding(bottom = additionalBottomInset)
         }
         windowInsets
     }
