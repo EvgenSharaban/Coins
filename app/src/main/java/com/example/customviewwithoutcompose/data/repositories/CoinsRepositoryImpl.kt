@@ -8,10 +8,10 @@ import com.example.customviewwithoutcompose.core.networking.toDomain
 import com.example.customviewwithoutcompose.core.networking.toDomainList
 import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.core.other.roundTo
+import com.example.customviewwithoutcompose.data.local.room.CoinsDao
 import com.example.customviewwithoutcompose.data.local.room.CoinsDataBase
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToLocalEntityList
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinRoomEntity
-import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.data.network.ApiService
 import com.example.customviewwithoutcompose.data.network.entities.mappers.CoinDomainMapper
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
@@ -26,11 +26,11 @@ import javax.inject.Inject
 
 class CoinsRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
-    private val dataBase: CoinsDataBase
+    private val dataBase: CoinsDataBase,
+    private val coinsDao: CoinsDao,
 ) : CoinsRepository {
 
-    override val coins: Flow<List<CoinRoomEntity>> = dataBase.coinsDao().getAllCoins()
-    override val notes: Flow<List<NoteRoomEntity>> = dataBase.coinsDao().getAllNotes()
+    override val coins: Flow<List<CoinRoomEntity>> = coinsDao.getAllCoins()
 
 //    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
 //        return safeApiCallList {
@@ -115,30 +115,12 @@ class CoinsRepositoryImpl @Inject constructor(
             fetchedCoin.copy(price = roundedPrice)
         }
 
-    override suspend fun addNote(note: NoteRoomEntity): Result<Unit> {
-        try {
-            dataBase.coinsDao().addNote(note)
-            return Result.success(Unit)
-        } catch (e: Throwable) {
-            return Result.failure(e)
-        }
-    }
-
-    override suspend fun deleteNote(note: NoteRoomEntity): Result<Unit> {
-        return try {
-            dataBase.coinsDao().deleteNote(note)
-            Result.success(Unit)
-        } catch (e: Throwable) {
-            Result.failure(e)
-        }
-    }
-
     private suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {
             withContext(Dispatchers.IO) {
                 dataBase.withTransaction {
-                    dataBase.coinsDao().deleteAllCoins()
-                    dataBase.coinsDao().insertAllCoins(list.mapToLocalEntityList())
+                    coinsDao.deleteAllCoins()
+                    coinsDao.insertAllCoins(list.mapToLocalEntityList())
                 }
                 Log.d(TAG, "insertCoinsToDB: success")
             }

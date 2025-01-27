@@ -11,6 +11,7 @@ import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
+import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
 import com.example.customviewwithoutcompose.presentation.adapters.CustomListItem
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAdapter
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinCustomView
@@ -36,6 +37,7 @@ import kotlin.collections.map
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val coinsRepository: CoinsRepository,
+    private val notesRepository: NotesRepository,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -88,14 +90,14 @@ class MainActivityViewModel @Inject constructor(
                 id = UUID.randomUUID().toString(),
                 note = noteText
             )
-            coinsRepository.addNote(note)
+            notesRepository.addNote(note)
             _needToScroll.trySend(true)
         }
     }
 
     fun deleteNote(note: NoteRoomEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            coinsRepository.deleteNote(note)
+            notesRepository.deleteNote(note)
         }
     }
 
@@ -111,7 +113,7 @@ class MainActivityViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            coinsRepository.notes.collect { localNotes ->
+            notesRepository.notes.collect { localNotes ->
                 Log.d(TAG, "observeData: notes size = ${localNotes.size}")
                 noteList.update {
                     localNotes.map { note ->

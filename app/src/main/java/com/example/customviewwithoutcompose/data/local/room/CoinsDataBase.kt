@@ -26,6 +26,7 @@ abstract class CoinsDataBase : RoomDatabase() {
     class MyAutoMigration : AutoMigrationSpec
 
     abstract fun coinsDao(): CoinsDao
+    abstract fun notesDao(): NotesDao
 
     companion object {
         private const val DATABASE_NAME = "coins.db"
