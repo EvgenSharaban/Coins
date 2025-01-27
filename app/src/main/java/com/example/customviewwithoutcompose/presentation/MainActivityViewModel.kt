@@ -21,6 +21,7 @@ import com.example.customviewwithoutcompose.presentation.models.note.mappers.Not
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -61,11 +62,11 @@ class MainActivityViewModel @Inject constructor(
             noteItems.plus(coinItems)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _event = Channel<String>(Channel.BUFFERED)
-    val event = _event.receiveAsFlow()
+    private val _messageForUser = Channel<String>(Channel.BUFFERED)
+    val messageForUser = _messageForUser.receiveAsFlow()
 
-    private val _needToScrollToAddedItem = Channel<Boolean>(Channel.BUFFERED)
-    val needToScrollToAddedItem = _needToScrollToAddedItem.receiveAsFlow()
+    private val _positionToScrollingList = Channel<Int>(Channel.BUFFERED)
+    val positionToScrollingList = _positionToScrollingList.receiveAsFlow()
 
     init {
         getCoins()
@@ -90,7 +91,7 @@ class MainActivityViewModel @Inject constructor(
                 note = noteText
             )
             notesRepository.addNote(note)
-            _needToScrollToAddedItem.trySend(true)
+            setAddedPositionToChannel()
         }
     }
 
@@ -129,7 +130,7 @@ class MainActivityViewModel @Inject constructor(
                 coinsRepository.fetchCoinsFullEntity()
             } else {
                 val message = context.getString(R.string.no_internet_connection)
-                _event.trySend(message)
+                _messageForUser.send(message)
                 Log.d(TAG, message)
             }
         }
@@ -142,6 +143,14 @@ class MainActivityViewModel @Inject constructor(
         val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
 
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private suspend fun setAddedPositionToChannel() {
+        delay(50)
+        val noteListSize = if (noteList.value.isNotEmpty()) {
+            noteList.value.size - 1
+        } else 0
+        _positionToScrollingList.send(noteListSize)
     }
 
 }

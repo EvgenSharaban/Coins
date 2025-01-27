@@ -26,8 +26,6 @@ import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAda
 import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
 import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToRoomModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -71,23 +69,18 @@ class MainActivity : AppCompatActivity() {
             showAddNoteDialog()
         }
 
-        lifecycleScope.launch(Dispatchers.Main.immediate) {
+        lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.event.collectLatest { message ->
+                viewModel.messageForUser.collectLatest { message ->
                     showToast(message)
                 }
             }
         }
 
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.needToScrollToAddedItem.collectLatest { needToScroll ->
-                    if (needToScroll) {
-                        val noteListSize = viewModel.noteList.value.size
-                        val lastPosition = if (noteListSize > 0) noteListSize - 1 else 0
-                        delay(50)
-                        binding.rvCoins.scrollToPosition(lastPosition)
-                    }
+                viewModel.positionToScrollingList.collectLatest { position ->
+                    binding.rvCoins.scrollToPosition(position)
                 }
             }
         }
