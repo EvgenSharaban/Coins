@@ -141,10 +141,12 @@ class CoinsListAdapter(
         }
 
         override fun getChangePayload(oldItem: CustomListItem, newItem: CustomListItem): Any? {
-            if (oldItem is CustomListItem.CoinItem && newItem is CustomListItem.CoinItem) {
-                if (oldItem.coin.isExpanded != newItem.coin.isExpanded) {
-                    return DESCRIPTION_VISIBILITY_PAYLOAD
-                }
+            if (
+                oldItem is CustomListItem.CoinItem &&
+                newItem is CustomListItem.CoinItem &&
+                oldItem.coin.isExpanded != newItem.coin.isExpanded
+            ) {
+                return DESCRIPTION_VISIBILITY_PAYLOAD
             }
             return null
         }

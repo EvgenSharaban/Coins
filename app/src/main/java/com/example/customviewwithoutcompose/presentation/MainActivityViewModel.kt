@@ -20,7 +20,6 @@ import com.example.customviewwithoutcompose.presentation.models.note.ModelForNot
 import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToNoteUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -85,7 +84,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun addNote(noteText: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val note = NoteRoomEntity(
                 id = UUID.randomUUID().toString(),
                 note = noteText
@@ -96,13 +95,13 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun deleteNote(note: NoteRoomEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             notesRepository.deleteNote(note)
         }
     }
 
     private fun observeData() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             coinsRepository.coins.collect { localCoins ->
                 val coinsList = localCoins.map { it.mapToUiModel() }
                 Log.d(TAG, "observeData: _coinForCustomViewList size = ${coinList.value.size}, coinsList size = ${coinsList.size}")
@@ -112,7 +111,7 @@ class MainActivityViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             notesRepository.notes.collect { localNotes ->
                 Log.d(TAG, "observeData: notes size = ${localNotes.size}")
                 noteList.update {
