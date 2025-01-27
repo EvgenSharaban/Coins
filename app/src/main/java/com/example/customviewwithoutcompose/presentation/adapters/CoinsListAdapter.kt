@@ -16,7 +16,7 @@ import com.example.customviewwithoutcompose.presentation.models.note.ModelForNot
 
 class CoinsListAdapter(
     private val onCoinClicked: (item: ModelForAdapter) -> Unit,
-    private val onNoteClicked: (item: ModelForNoteCustomView) -> Unit
+    private val onNoteLongClicked: (item: ModelForNoteCustomView) -> Unit
 ) :
     ListAdapter<CustomListItem, RecyclerView.ViewHolder>(CoinDiffUtil()) {
 
@@ -32,7 +32,7 @@ class CoinsListAdapter(
         return when (viewType) {
             TYPE_NOTE -> {
                 val view = inflater.inflate(R.layout.item_note, parent, false)
-                NoteViewHolder(ItemNoteBinding.bind(view), onNoteClicked)
+                NoteViewHolder(ItemNoteBinding.bind(view), onNoteLongClicked)
             }
 
             TYPE_COIN -> {

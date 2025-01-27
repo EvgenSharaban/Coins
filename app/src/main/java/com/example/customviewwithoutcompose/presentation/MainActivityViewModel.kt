@@ -64,8 +64,8 @@ class MainActivityViewModel @Inject constructor(
     private val _event = Channel<String>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
 
-    private val _needToScroll = Channel<Boolean>(Channel.BUFFERED)
-    val needToScroll = _needToScroll.receiveAsFlow()
+    private val _needToScrollToAddedItem = Channel<Boolean>(Channel.BUFFERED)
+    val needToScrollToAddedItem = _needToScrollToAddedItem.receiveAsFlow()
 
     init {
         getCoins()
@@ -90,7 +90,7 @@ class MainActivityViewModel @Inject constructor(
                 note = noteText
             )
             notesRepository.addNote(note)
-            _needToScroll.trySend(true)
+            _needToScrollToAddedItem.trySend(true)
         }
     }
 

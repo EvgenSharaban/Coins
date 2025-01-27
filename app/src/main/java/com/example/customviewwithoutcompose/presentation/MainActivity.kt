@@ -38,8 +38,8 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainActivityViewModel by viewModels()
     private val coinsAdapter = CoinsListAdapter(
         onCoinClicked = ::onItemCoinClicked,
-        onNoteClicked = { note ->
-            onNoteClicked(note)
+        onNoteLongClicked = { note ->
+            onNoteLongClicked(note)
         }
     )
     private lateinit var coinsDecorator: ItemDecoratorCoinsList
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.Main) {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.needToScroll.collectLatest { needToScroll ->
+                viewModel.needToScrollToAddedItem.collectLatest { needToScroll ->
                     if (needToScroll) {
                         val noteListSize = viewModel.noteList.value.size
                         val lastPosition = if (noteListSize > 0) noteListSize - 1 else 0
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.onItemToggle(item)
     }
 
-    private fun onNoteClicked(note: ModelForNoteCustomView) {
+    private fun onNoteLongClicked(note: ModelForNoteCustomView) {
         showDeleteNoteDialog(note)
     }
 
