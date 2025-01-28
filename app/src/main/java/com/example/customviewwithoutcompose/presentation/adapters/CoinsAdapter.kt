@@ -46,8 +46,11 @@ class CoinsAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener {
-                val item = getItem(absoluteAdapterPosition).coin
-                onClicked(item)
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item = getItem(position).coin
+                    onClicked(item)
+                }
             }
         }
 

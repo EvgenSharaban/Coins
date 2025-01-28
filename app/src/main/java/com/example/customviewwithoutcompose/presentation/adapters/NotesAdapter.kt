@@ -35,9 +35,14 @@ class NotesAdapter(
 
         init {
             itemView.setOnLongClickListener {
-                val item = getItem(absoluteAdapterPosition)
-                onClick(item.note)
-                true
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item = getItem(position)
+                    onClick(item.note)
+                    true
+                } else {
+                    false
+                }
             }
         }
 
