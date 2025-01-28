@@ -6,19 +6,19 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
+import com.example.customviewwithoutcompose.databinding.DialogAddNoteBinding
+import com.example.customviewwithoutcompose.databinding.DialogDeleteNoteBinding
 import com.example.customviewwithoutcompose.presentation.adapters.CoinsListAdapter
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAdapter
 import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
@@ -116,12 +116,10 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogView)
             .create()
 
-        val etNoteInput = dialogView.findViewById<AppCompatEditText>(R.id.etItemInput)
-        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
-        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val binding = DialogAddNoteBinding.bind(dialogView)
 
-        btnConfirm.setOnClickListener {
-            val noteText = etNoteInput?.text?.toString()?.trim() ?: ""
+        binding.btnConfirm.setOnClickListener {
+            val noteText = binding.etItemInput.text?.toString()?.trim() ?: ""
             if (noteText.isNotEmpty()) {
                 viewModel.addNote(noteText)
                 dialog.dismiss()
@@ -129,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please enter a note", Toast.LENGTH_SHORT).show()
             }
         }
-        btnCancel.setOnClickListener {
+        binding.btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
@@ -144,14 +142,13 @@ class MainActivity : AppCompatActivity() {
             .setView(dialogView)
             .create()
 
-        val btnConfirm = dialogView.findViewById<Button>(R.id.btnConfirm)
-        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val binding = DialogDeleteNoteBinding.bind(dialogView)
 
-        btnConfirm.setOnClickListener {
+        binding.btnConfirm.setOnClickListener {
             viewModel.deleteNote(note.mapToRoomModel())
             dialog.dismiss()
         }
-        btnCancel.setOnClickListener {
+        binding.btnCancel.setOnClickListener {
             dialog.dismiss()
         }
 
