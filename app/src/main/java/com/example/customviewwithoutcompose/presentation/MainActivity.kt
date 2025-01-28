@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         initBinding()
         setupEdgeToEdgeInsets()
+        setupUIInsets()
         initCoinsRecyclerView()
         setupListeners()
         setupObservers()
@@ -58,12 +59,16 @@ class MainActivity : AppCompatActivity() {
         binding.root.updatePadding(true, false)
     }
 
+    private fun setupUIInsets() {
+        binding.rvCoins.updatePadding(
+            needUpdateTop = false,
+            needUpdateBottom = true,
+            additionalBottomInset = resources.getDimensionPixelSize(R.dimen.bottom_margin_last)
+        )
+    }
+
     private fun initCoinsRecyclerView() {
-        val coinsDecorator = ItemDecoratorCoinsList(R.dimen.bottom_margin_last)
-        binding.rvCoins.apply {
-            adapter = coinsAdapter
-            addItemDecoration(coinsDecorator)
-        }
+        binding.rvCoins.adapter = coinsAdapter
     }
 
     private fun setupListeners() {
