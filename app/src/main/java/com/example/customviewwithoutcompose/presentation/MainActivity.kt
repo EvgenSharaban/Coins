@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
 
         btnConfirm.setOnClickListener {
-            val noteText = etNoteInput.text.toString().trim()
+            val noteText = etNoteInput?.text?.toString()?.trim() ?: ""
             if (noteText.isNotEmpty()) {
                 viewModel.addNote(noteText)
                 dialog.dismiss()
