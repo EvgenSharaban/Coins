@@ -13,6 +13,7 @@ loggingInterceptor = "4.12.0"
 material = "1.12.0"
 activity = "1.10.0"
 constraintlayout = "2.2.0"
+recyclerview = "1.4.0"
 retrofit = "2.11.0"
 hilt = "2.51.1"
 roomRuntime = "2.6.1"
@@ -22,6 +23,7 @@ ksp = "2.0.0-1.0.21"
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }

@@ -13,8 +13,8 @@ import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEnt
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
 import com.example.customviewwithoutcompose.presentation.adapters.CustomListItem
-import com.example.customviewwithoutcompose.presentation.models.coin.ModelForAdapter
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinCustomView
+import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
 import com.example.customviewwithoutcompose.presentation.models.coin.mappers.CoinUiModelMapper.mapToUiModel
 import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
 import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToNoteUiModel
@@ -52,7 +52,7 @@ class MainActivityViewModel @Inject constructor(
             }
             val coinItems = coins.map { coin ->
                 CustomListItem.CoinItem(
-                    ModelForAdapter(
+                    ModelForCoinsAdapter(
                         customViewModel = coin,
                         isExpanded = coin.id in expandedIds
                     )
@@ -71,7 +71,7 @@ class MainActivityViewModel @Inject constructor(
         observeData()
     }
 
-    fun onItemToggle(item: ModelForAdapter) {
+    fun onItemToggle(item: ModelForCoinsAdapter) {
         expandedCoinItemsIds.update {
             if (expandedCoinItemsIds.value.contains(item.customViewModel.id)) {
                 it.minus(item.customViewModel.id)
