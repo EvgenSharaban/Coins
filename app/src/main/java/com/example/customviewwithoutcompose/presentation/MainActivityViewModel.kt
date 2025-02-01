@@ -12,7 +12,9 @@ import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
-import com.example.customviewwithoutcompose.presentation.adapters.CustomListItem
+import com.example.customviewwithoutcompose.presentation.adapters.DelegateAdapterItem
+import com.example.customviewwithoutcompose.presentation.adapters.coin.CoinItem
+import com.example.customviewwithoutcompose.presentation.adapters.note.NoteItem
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinCustomView
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
 import com.example.customviewwithoutcompose.presentation.models.coin.mappers.CoinUiModelMapper.mapToUiModel
@@ -41,17 +43,17 @@ class MainActivityViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    val noteList = MutableStateFlow<List<ModelForNoteCustomView>>(emptyList())
+    private val noteList = MutableStateFlow<List<ModelForNoteCustomView>>(emptyList())
     private val coinList = MutableStateFlow<List<ModelForCoinCustomView>>(emptyList())
     private val expandedCoinItemsIds = MutableStateFlow<Set<String>>(emptySet())
 
-    val recyclerItemsList: StateFlow<List<CustomListItem>> =
+    val recyclerItemsList: StateFlow<List<DelegateAdapterItem>> =
         combine(noteList, coinList, expandedCoinItemsIds) { notes, coins, expandedIds ->
             val noteItems = notes.map {
-                CustomListItem.NoteItem(it)
+                NoteItem(it)
             }
             val coinItems = coins.map { coin ->
-                CustomListItem.CoinItem(
+                CoinItem(
                     ModelForCoinsAdapter(
                         customViewModel = coin,
                         isExpanded = coin.id in expandedIds

@@ -14,15 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.ConcatAdapter
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.databinding.DialogAddNoteBinding
 import com.example.customviewwithoutcompose.databinding.DialogDeleteNoteBinding
-import com.example.customviewwithoutcompose.presentation.adapters.CoinsAdapter
-import com.example.customviewwithoutcompose.presentation.adapters.CustomListItem
-import com.example.customviewwithoutcompose.presentation.adapters.NotesAdapter
+import com.example.customviewwithoutcompose.presentation.adapters.CompositeAdapter
+import com.example.customviewwithoutcompose.presentation.adapters.coin.CoinDelegateAdapter
+import com.example.customviewwithoutcompose.presentation.adapters.note.NoteDelegateAdapter
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
 import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
 import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToRoomModel
@@ -36,9 +35,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainActivityViewModel by viewModels()
 
-    private val coinsAdapter = CoinsAdapter(::onItemCoinClicked)
-    private val notesAdapter = NotesAdapter(::onNoteLongClicked)
-    private val recyclerAdapter = ConcatAdapter(notesAdapter, coinsAdapter)
+    private val coinsDelegateAdapter = CoinDelegateAdapter(::onItemCoinClicked)
+    private val notesDelegateAdapter = NoteDelegateAdapter(::onNoteLongClicked)
+
+    private val compositeAdapter by lazy {
+        CompositeAdapter.Builder()
+            .add(coinsDelegateAdapter)
+            .add(notesDelegateAdapter)
+            .build()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -71,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initCoinsRecyclerView() {
-        binding.rvCoins.adapter = recyclerAdapter
+        binding.rvCoins.adapter = compositeAdapter
     }
 
     private fun setupListeners() {
@@ -95,10 +100,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.recyclerItemsList.collectLatest { list ->
-                    val notes = list.filterIsInstance<CustomListItem.NoteItem>()
-                    notesAdapter.submitList(notes)
-                    val coins = list.filterIsInstance<CustomListItem.CoinItem>()
-                    coinsAdapter.submitList(coins)
+                    compositeAdapter.submitList(list)
                 }
             }
         }
