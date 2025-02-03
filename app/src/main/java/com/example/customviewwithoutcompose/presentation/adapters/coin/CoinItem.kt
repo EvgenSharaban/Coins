@@ -25,22 +25,13 @@ data class CoinItem(
     inner class CoinContent(val coin: ModelForCoinsAdapter) : ContentComparable {
         override fun equals(other: Any?): Boolean {
             if (other is CoinContent) {
-                return coin.isExpanded == other.coin.isExpanded &&
-                        coin.customViewModel.descriptionText == other.coin.customViewModel.descriptionText &&
-                        coin.customViewModel.price == other.coin.customViewModel.price &&
-                        coin.customViewModel.logo == other.coin.customViewModel.logo &&
-                        coin.customViewModel.creationDate == other.coin.customViewModel.creationDate &&
-                        coin.customViewModel.rank == other.coin.customViewModel.rank &&
-                        coin.customViewModel.shortNameText == other.coin.customViewModel.shortNameText &&
-                        coin.customViewModel.nameText == other.coin.customViewModel.nameText
+                return coin == other.coin
             }
             return false
         }
 
         override fun hashCode(): Int {
-            var result = coin.customViewModel.creationDate.hashCode()
-            result = 125 * result + coin.customViewModel.descriptionText.hashCode()
-            return result
+            return 125 * coin.hashCode()
         }
     }
 
