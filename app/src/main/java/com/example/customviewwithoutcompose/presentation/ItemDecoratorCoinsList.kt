@@ -6,7 +6,7 @@ import androidx.annotation.DimenRes
 import androidx.recyclerview.widget.RecyclerView
 
 class ItemDecoratorCoinsList(
-    @DimenRes private val bottomMarginResId: Int,
+    private val bottomMarginPx: Int,
 ) : RecyclerView.ItemDecoration() {
     override fun getItemOffsets(
         outRect: Rect,
@@ -20,11 +20,9 @@ class ItemDecoratorCoinsList(
         val itemPosition = parent.getChildAdapterPosition(view)
         if (itemPosition == RecyclerView.NO_POSITION) return
 
-        val bottomSpase = view.resources.getDimensionPixelSize(bottomMarginResId)
-
         /** adding marginBottom to last item */
         when (itemPosition) {
-            adapter.itemCount - 1 -> outRect.bottom = bottomSpase
+            adapter.itemCount - 1 -> outRect.bottom = bottomMarginPx
             else -> outRect.bottom = 0
         }
     }
