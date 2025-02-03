@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.adapters
+package com.example.delegateadapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

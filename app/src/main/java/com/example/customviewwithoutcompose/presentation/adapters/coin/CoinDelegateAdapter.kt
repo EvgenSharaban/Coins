@@ -8,9 +8,9 @@ import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.formatDate
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.presentation.adapters.DelegateAdapter
-import com.example.customviewwithoutcompose.presentation.adapters.DelegateAdapterItem
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
+import com.example.delegateadapter.DelegateAdapter
+import com.example.delegateadapter.DelegateAdapterItem
 
 class CoinDelegateAdapter(
     private val onCoinClicked: (item: ModelForCoinsAdapter) -> Unit

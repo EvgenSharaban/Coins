@@ -1,8 +1,8 @@
 package com.example.customviewwithoutcompose.presentation.adapters.coin
 
-import com.example.customviewwithoutcompose.presentation.adapters.ContentComparable
-import com.example.customviewwithoutcompose.presentation.adapters.DelegateAdapterItem
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
+import com.example.delegateadapter.ContentComparable
+import com.example.delegateadapter.DelegateAdapterItem
 
 data class CoinItem(
     val coin: ModelForCoinsAdapter

@@ -57,6 +57,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation(project("::delegateAdapter"))
+
     // retrofit
     implementation(libs.retrofit)
     implementation(libs.converter.gson)

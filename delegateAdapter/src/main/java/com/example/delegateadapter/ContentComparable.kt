@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.adapters
+package com.example.delegateadapter
 
 interface ContentComparable {
     override fun equals(other: Any?): Boolean

@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.adapters
+package com.example.delegateadapter
 
 import android.util.SparseArray
 import android.view.ViewGroup
@@ -57,7 +57,7 @@ class CompositeAdapter(
         private var count: Int = 0
         private val delegates: SparseArray<DelegateAdapter<DelegateAdapterItem, RecyclerView.ViewHolder>> = SparseArray()
 
-//        @Suppress("UNCHECKED_CAST")
+        //        @Suppress("UNCHECKED_CAST")
         fun add(delegateAdapter: DelegateAdapter<out DelegateAdapterItem, *>): Builder {
             // what else can be done besides an annotation above?
             delegates.put(count++, delegateAdapter as DelegateAdapter<DelegateAdapterItem, RecyclerView.ViewHolder>)

@@ -1,8 +1,8 @@
 package com.example.customviewwithoutcompose.presentation.adapters.note
 
-import com.example.customviewwithoutcompose.presentation.adapters.ContentComparable
-import com.example.customviewwithoutcompose.presentation.adapters.DelegateAdapterItem
 import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
+import com.example.delegateadapter.ContentComparable
+import com.example.delegateadapter.DelegateAdapterItem
 
 data class NoteItem(
     val note: ModelForNoteCustomView

@@ -12,7 +12,6 @@ import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
-import com.example.customviewwithoutcompose.presentation.adapters.DelegateAdapterItem
 import com.example.customviewwithoutcompose.presentation.adapters.coin.CoinItem
 import com.example.customviewwithoutcompose.presentation.adapters.note.NoteItem
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinCustomView
@@ -20,6 +19,7 @@ import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoi
 import com.example.customviewwithoutcompose.presentation.models.coin.mappers.CoinUiModelMapper.mapToUiModel
 import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
 import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToNoteUiModel
+import com.example.delegateadapter.DelegateAdapterItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel

@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.ItemNoteBinding
-import com.example.customviewwithoutcompose.presentation.adapters.DelegateAdapter
-import com.example.customviewwithoutcompose.presentation.adapters.DelegateAdapterItem
 import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
+import com.example.delegateadapter.DelegateAdapter
+import com.example.delegateadapter.DelegateAdapterItem
 
 class NoteDelegateAdapter(
     private val onNoteLongClicked: (item: ModelForNoteCustomView) -> Unit

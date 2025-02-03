@@ -19,12 +19,12 @@ import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.databinding.DialogAddNoteBinding
 import com.example.customviewwithoutcompose.databinding.DialogDeleteNoteBinding
-import com.example.customviewwithoutcompose.presentation.adapters.CompositeAdapter
 import com.example.customviewwithoutcompose.presentation.adapters.coin.CoinDelegateAdapter
 import com.example.customviewwithoutcompose.presentation.adapters.note.NoteDelegateAdapter
 import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
 import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
 import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToRoomModel
+import com.example.delegateadapter.CompositeAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

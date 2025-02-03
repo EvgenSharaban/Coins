@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Custom View without Compose"
 include(":app")
- 
+include(":delegateAdapter")
