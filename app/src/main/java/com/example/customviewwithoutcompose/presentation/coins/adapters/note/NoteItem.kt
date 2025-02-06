@@ -1,6 +1,6 @@
-package com.example.customviewwithoutcompose.presentation.adapters.note
+package com.example.customviewwithoutcompose.presentation.coins.adapters.note
 
-import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
+import com.example.customviewwithoutcompose.presentation.coins.models.note.ModelForNoteCustomView
 import com.example.delegateadapter.ContentComparable
 import com.example.delegateadapter.DelegateAdapterItem
 

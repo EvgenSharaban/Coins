@@ -1,11 +1,11 @@
-package com.example.customviewwithoutcompose.presentation.adapters.note
+package com.example.customviewwithoutcompose.presentation.coins.adapters.note
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.databinding.ItemNoteBinding
-import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
+import com.example.customviewwithoutcompose.presentation.coins.models.note.ModelForNoteCustomView
 import com.example.delegateadapter.DelegateAdapter
 import com.example.delegateadapter.DelegateAdapterItem
 

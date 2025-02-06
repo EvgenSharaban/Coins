@@ -1,5 +1,6 @@
 package com.example.customviewwithoutcompose.core.other
 
+import android.content.Context
 import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -22,4 +23,9 @@ fun formatDate(date: String): String {
         Log.w(TAG, "formatDate: failed, \nerror = $e")
         ""
     }
+}
+
+fun Int.fromDpToPx(context: Context): Int {
+    val density = context.resources.displayMetrics.density
+    return (this * density).toInt()
 }

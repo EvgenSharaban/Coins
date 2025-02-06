@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.adapters.coin
+package com.example.customviewwithoutcompose.presentation.coins.adapters.coin
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,7 +8,7 @@ import coil.load
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.formatDate
 import com.example.customviewwithoutcompose.databinding.CustomViewBinding
-import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
+import com.example.customviewwithoutcompose.presentation.coins.models.coin.ModelForCoinsAdapter
 import com.example.delegateadapter.DelegateAdapter
 import com.example.delegateadapter.DelegateAdapterItem
 

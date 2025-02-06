@@ -1,5 +1,7 @@
-package com.example.customviewwithoutcompose.presentation
+package com.example.customviewwithoutcompose.presentation.coins
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -7,23 +9,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.customviewwithoutcompose.R
+import com.example.customviewwithoutcompose.core.other.fromDpToPx
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.databinding.DialogAddNoteBinding
 import com.example.customviewwithoutcompose.databinding.DialogDeleteNoteBinding
-import com.example.customviewwithoutcompose.presentation.adapters.coin.CoinDelegateAdapter
-import com.example.customviewwithoutcompose.presentation.adapters.note.NoteDelegateAdapter
-import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
-import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
-import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToRoomModel
+import com.example.customviewwithoutcompose.presentation.Events
+import com.example.customviewwithoutcompose.presentation.coins.adapters.coin.CoinDelegateAdapter
+import com.example.customviewwithoutcompose.presentation.coins.adapters.note.NoteDelegateAdapter
+import com.example.customviewwithoutcompose.presentation.coins.models.coin.ModelForCoinsAdapter
+import com.example.customviewwithoutcompose.presentation.coins.models.note.ModelForNoteCustomView
+import com.example.customviewwithoutcompose.presentation.coins.models.note.mappers.NoteUiModelMapper.mapToRoomModel
+import com.example.customviewwithoutcompose.presentation.summary.SummaryActivity
 import com.example.delegateadapter.CompositeAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -55,6 +62,13 @@ class MainActivity : AppCompatActivity() {
         initCoinsRecyclerView()
         setupListeners()
         setupObservers()
+        setupBottomNavigation()
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                finishAffinity()
+            }
+        })
     }
 
     private fun initBinding() {
@@ -73,6 +87,15 @@ class MainActivity : AppCompatActivity() {
             needUpdateBottom = true,
             additionalBottomInset = resources.getDimensionPixelSize(R.dimen.bottom_margin_last)
         )
+        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigationView) { view, insets ->
+            view.setPadding(0, 0, 0, 8.fromDpToPx(this)) // changed default bottom padding for bottomNavigationView
+            insets
+        }
+        binding.fabAddNote.apply {
+            val insetFab = 24.fromDpToPx(this@MainActivity).toFloat()
+            translationY = -insetFab
+            translationX = -insetFab
+        }
     }
 
     private fun initCoinsRecyclerView() {
@@ -102,6 +125,23 @@ class MainActivity : AppCompatActivity() {
                 viewModel.recyclerItemsList.collectLatest { list ->
                     compositeAdapter.submitList(list)
                 }
+            }
+        }
+    }
+
+    private fun setupBottomNavigation() {
+        binding.bottomNavigationView.selectedItemId = R.id.nav_home
+
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_summary -> {
+                    val intent = Intent(this, SummaryActivity::class.java)
+                    val resetDefaultAnimation = ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle()
+                    startActivity(intent, resetDefaultAnimation)
+                    true
+                }
+
+                else -> false
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation
+package com.example.customviewwithoutcompose.presentation.coins
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
@@ -12,13 +12,14 @@ import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
-import com.example.customviewwithoutcompose.presentation.adapters.coin.CoinItem
-import com.example.customviewwithoutcompose.presentation.adapters.note.NoteItem
-import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinCustomView
-import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
-import com.example.customviewwithoutcompose.presentation.models.coin.mappers.CoinUiModelMapper.mapToUiModel
-import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
-import com.example.customviewwithoutcompose.presentation.models.note.mappers.NoteUiModelMapper.mapToNoteUiModel
+import com.example.customviewwithoutcompose.presentation.Events
+import com.example.customviewwithoutcompose.presentation.coins.adapters.coin.CoinItem
+import com.example.customviewwithoutcompose.presentation.coins.adapters.note.NoteItem
+import com.example.customviewwithoutcompose.presentation.coins.models.coin.ModelForCoinCustomView
+import com.example.customviewwithoutcompose.presentation.coins.models.coin.ModelForCoinsAdapter
+import com.example.customviewwithoutcompose.presentation.coins.models.coin.mappers.CoinUiModelMapper.mapToUiModel
+import com.example.customviewwithoutcompose.presentation.coins.models.note.ModelForNoteCustomView
+import com.example.customviewwithoutcompose.presentation.coins.models.note.mappers.NoteUiModelMapper.mapToNoteUiModel
 import com.example.delegateadapter.DelegateAdapterItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

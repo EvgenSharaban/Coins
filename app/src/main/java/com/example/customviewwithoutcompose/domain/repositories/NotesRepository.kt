@@ -11,4 +11,6 @@ interface NotesRepository {
 
     suspend fun deleteNote(note: NoteRoomEntity): Result<Unit>
 
+    suspend fun getTotalNotesCount(): Result<Int>
+
 }

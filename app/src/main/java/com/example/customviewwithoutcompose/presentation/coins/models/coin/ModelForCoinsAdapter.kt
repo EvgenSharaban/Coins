@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.models.coin
+package com.example.customviewwithoutcompose.presentation.coins.models.coin
 
 data class ModelForCoinsAdapter(
     val customViewModel: ModelForCoinCustomView = ModelForCoinCustomView.DEFAULT,

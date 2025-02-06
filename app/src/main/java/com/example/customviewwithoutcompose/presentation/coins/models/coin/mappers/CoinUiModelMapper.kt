@@ -1,7 +1,7 @@
-package com.example.customviewwithoutcompose.presentation.models.coin.mappers
+package com.example.customviewwithoutcompose.presentation.coins.models.coin.mappers
 
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinRoomEntity
-import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinCustomView
+import com.example.customviewwithoutcompose.presentation.coins.models.coin.ModelForCoinCustomView
 
 object CoinUiModelMapper {
 

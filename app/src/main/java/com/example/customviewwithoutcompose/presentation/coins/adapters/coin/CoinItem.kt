@@ -1,6 +1,6 @@
-package com.example.customviewwithoutcompose.presentation.adapters.coin
+package com.example.customviewwithoutcompose.presentation.coins.adapters.coin
 
-import com.example.customviewwithoutcompose.presentation.models.coin.ModelForCoinsAdapter
+import com.example.customviewwithoutcompose.presentation.coins.models.coin.ModelForCoinsAdapter
 import com.example.delegateadapter.ContentComparable
 import com.example.delegateadapter.DelegateAdapterItem
 

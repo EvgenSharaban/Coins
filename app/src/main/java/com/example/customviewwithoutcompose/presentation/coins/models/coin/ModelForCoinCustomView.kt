@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.models.coin
+package com.example.customviewwithoutcompose.presentation.coins.models.coin
 
 import androidx.annotation.StyleRes
 import com.example.customviewwithoutcompose.R

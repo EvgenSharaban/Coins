@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.models.note
+package com.example.customviewwithoutcompose.presentation.coins.models.note
 
 data class ModelForNoteCustomView(
     val id: String,

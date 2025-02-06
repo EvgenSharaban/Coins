@@ -1,7 +1,7 @@
-package com.example.customviewwithoutcompose.presentation.models.note.mappers
+package com.example.customviewwithoutcompose.presentation.coins.models.note.mappers
 
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
-import com.example.customviewwithoutcompose.presentation.models.note.ModelForNoteCustomView
+import com.example.customviewwithoutcompose.presentation.coins.models.note.ModelForNoteCustomView
 
 object NoteUiModelMapper {
 
