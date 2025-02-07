@@ -93,6 +93,7 @@ class MainActivity : AppCompatActivity() {
             needUpdateBottom = true,
             additionalBottomInset = resources.getDimensionPixelSize(R.dimen.bottom_margin_last)
         )
+        // don't replace by binding.bottomNavigationView.updatePadding because there set value to global variable inset
         ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigationView) { view, insets ->
             inset = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(0, 0, 0, inset.bottom) // changed default bottom padding for bottomNavigationView

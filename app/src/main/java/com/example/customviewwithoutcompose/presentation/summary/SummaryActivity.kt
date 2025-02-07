@@ -7,12 +7,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.customviewwithoutcompose.R
-import com.example.customviewwithoutcompose.core.other.fromDpToPx
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivitySummaryBinding
 import com.example.customviewwithoutcompose.presentation.coins.MainActivity
@@ -97,10 +95,10 @@ class SummaryActivity : AppCompatActivity() {
     }
 
     private fun setupUiInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigationView) { view, insets ->
-            view.setPadding(0, 0, 0, 8.fromDpToPx(this)) // changed default bottom padding for bottomNavigationView
-            insets
-        }
+        binding.bottomNavigationView.updatePadding(
+            needUpdateTop = false,
+            needUpdateBottom = true
+        )
     }
 
     private fun setupBottomNavigation() {
