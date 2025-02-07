@@ -1,11 +1,11 @@
 package com.example.customviewwithoutcompose.presentation.summary
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
 import com.example.customviewwithoutcompose.domain.repositories.StatisticRepository
 import com.example.customviewwithoutcompose.domain.usecases.DayWithMostNotes
+import com.example.customviewwithoutcompose.presentation.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,7 @@ class SummaryActivityViewModel @Inject constructor(
     private val notesRepository: NotesRepository,
     private val statisticRepository: StatisticRepository,
     private val dayWithMostNotesUseCase: DayWithMostNotes
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _totalItemsCounts = MutableStateFlow<String>("-")
     val totalItemsCounts = _totalItemsCounts.asStateFlow()
@@ -45,6 +45,7 @@ class SummaryActivityViewModel @Inject constructor(
 
     private fun fetchTotalItemsCount() {
         viewModelScope.launch {
+            setLoading(true)
             statisticRepository.getTotalItemsCount()
                 .onSuccess {
                     _totalItemsCounts.value = it.toString()
@@ -52,6 +53,7 @@ class SummaryActivityViewModel @Inject constructor(
                 .onFailure {
                     _totalItemsCounts.value = "-"
                 }
+            setLoading(false)
         }
     }
 

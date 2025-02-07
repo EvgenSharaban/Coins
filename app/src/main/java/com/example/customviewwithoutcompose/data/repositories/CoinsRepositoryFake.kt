@@ -69,6 +69,7 @@ class CoinsRepositoryFake @Inject constructor(
                 insertCoinsToDB(it)
             }
             .map { } // need for Result<Unit>
+//        return Result.failure(Exception("manually failed"))
     }
 
     override suspend fun getCoinById(id: String): Result<CoinDomain> {
@@ -91,8 +92,8 @@ class CoinsRepositoryFake @Inject constructor(
     }
 
     override suspend fun getHiddenCoinsCount(): Result<Int> {
-        return Result.success(3)
-        //        return Result.failure(Exception("-"))
+//        return Result.success(3)
+        return Result.failure(Exception("-"))
     }
 
     private suspend fun insertCoinsToDB(list: List<CoinDomain>) {

@@ -31,8 +31,8 @@ class NotesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTotalNotesCount(): Result<Int> {
-        return Result.success(8)
-        //        return Result.failure(Exception("-"))
+//        return Result.success(8)
+        return Result.failure(Exception("-"))
     }
 
 }

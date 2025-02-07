@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -36,6 +37,7 @@ import com.example.customviewwithoutcompose.presentation.coins.models.note.Model
 import com.example.customviewwithoutcompose.presentation.coins.models.note.mappers.NoteUiModelMapper.mapToRoomModel
 import com.example.customviewwithoutcompose.presentation.summary.SummaryActivity
 import com.example.delegateadapter.CompositeAdapter
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -145,7 +147,7 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.event.collectLatest { event ->
                     when (event) {
-                        is Events.MessageForUser -> showToast(event.message)
+                        is Events.MessageForUser -> showMessageForUser(event.message)
                         is Events.PositionToScrolling -> binding.rvCoins.scrollToPosition(event.position)
                     }
                 }
@@ -158,6 +160,10 @@ class MainActivity : AppCompatActivity() {
                     compositeAdapter.submitList(list)
                 }
             }
+        }
+
+        viewModel.isLoading.observe(this) { isLoading ->
+            binding.progressBar.isVisible = isLoading
         }
     }
 
@@ -178,8 +184,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+    private fun showMessageForUser(message: String) {
+//        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
+        val snackBar = Snackbar.make(this@MainActivity, binding.root, message, Snackbar.LENGTH_INDEFINITE)
+        snackBar.setTextMaxLines(5)
+        snackBar.setAction("Ok") {
+            snackBar.dismiss()
+        }
+        snackBar.show()
     }
 
     private fun onItemCoinClicked(item: ModelForCoinsAdapter) {

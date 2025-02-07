@@ -5,7 +5,6 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.TAG
@@ -13,6 +12,7 @@ import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEnt
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
 import com.example.customviewwithoutcompose.presentation.Events
+import com.example.customviewwithoutcompose.presentation.base.BaseViewModel
 import com.example.customviewwithoutcompose.presentation.coins.adapters.coin.CoinItem
 import com.example.customviewwithoutcompose.presentation.coins.adapters.note.NoteItem
 import com.example.customviewwithoutcompose.presentation.coins.models.coin.ModelForCoinCustomView
@@ -42,7 +42,7 @@ class MainActivityViewModel @Inject constructor(
     private val coinsRepository: CoinsRepository,
     private val notesRepository: NotesRepository,
     @ApplicationContext private val context: Context
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val noteList = MutableStateFlow<List<ModelForNoteCustomView>>(emptyList())
     private val coinList = MutableStateFlow<List<ModelForCoinCustomView>>(emptyList())
@@ -86,18 +86,22 @@ class MainActivityViewModel @Inject constructor(
 
     fun addNote(noteText: String) {
         viewModelScope.launch {
+            setLoading(true)
             val note = NoteRoomEntity(
                 id = UUID.randomUUID().toString(),
                 note = noteText
             )
             notesRepository.addNote(note)
             setAddedPositionToChannel()
+            setLoading(false)
         }
     }
 
     fun deleteNote(note: NoteRoomEntity) {
         viewModelScope.launch {
+            setLoading(true)
             notesRepository.deleteNote(note)
+            setLoading(false)
         }
     }
 
@@ -126,13 +130,18 @@ class MainActivityViewModel @Inject constructor(
 
     private fun getCoins() {
         viewModelScope.launch {
+            setLoading(true)
             if (hasInternetConnection()) {
                 coinsRepository.fetchCoinsFullEntity()
+                    .onFailure { error ->
+                        _event.send(Events.MessageForUser(error.message ?: "Unknown error"))
+                    }
             } else {
                 val message = context.getString(R.string.no_internet_connection)
                 _event.send(Events.MessageForUser(message))
                 Log.d(TAG, message)
             }
+            setLoading(false)
         }
     }
 
