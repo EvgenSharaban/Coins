@@ -2,7 +2,9 @@ package com.example.customviewwithoutcompose.data.repositories
 
 import android.util.Log
 import androidx.room.withTransaction
+import com.example.customviewwithoutcompose.core.other.FAILURE_VALUE
 import com.example.customviewwithoutcompose.core.other.TAG
+import com.example.customviewwithoutcompose.data.local.datastore.CoinsDataStore
 import com.example.customviewwithoutcompose.data.local.room.CoinsDao
 import com.example.customviewwithoutcompose.data.local.room.CoinsDataBase
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToLocalEntityList
@@ -21,7 +23,8 @@ import javax.inject.Inject
 
 class CoinsRepositoryFake @Inject constructor(
     private val dataBase: CoinsDataBase,
-    private val coinsDao: CoinsDao
+    private val coinsDao: CoinsDao,
+    private val dataStore: CoinsDataStore
 ) : CoinsRepository {
 
     override val coins: Flow<List<CoinRoomEntity>> = coinsDao.getAllCoins()
@@ -92,9 +95,12 @@ class CoinsRepositoryFake @Inject constructor(
     }
 
     override suspend fun getHiddenCoinsCount(): Result<Int> {
-        delay(2000)
-        return Result.success(3)
-//        return Result.failure(Exception(FAILURE_VALUE))
+        return try {
+            val list = dataStore.getHidedCoinsIds()
+            Result.success(list.size)
+        } catch (e: Throwable) {
+            Result.failure(Exception(FAILURE_VALUE, e))
+        }
     }
 
     private suspend fun insertCoinsToDB(list: List<CoinDomain>) {

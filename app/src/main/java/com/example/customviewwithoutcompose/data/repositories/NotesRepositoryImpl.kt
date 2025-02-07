@@ -1,10 +1,12 @@
 package com.example.customviewwithoutcompose.data.repositories
 
+import com.example.customviewwithoutcompose.core.other.FAILURE_VALUE
 import com.example.customviewwithoutcompose.data.local.room.NotesDao
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class NotesRepositoryImpl @Inject constructor(
@@ -32,9 +34,13 @@ class NotesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTotalNotesCount(): Result<Int> {
-        delay(3000)
-        return Result.success(8)
-//        return Result.failure(Exception(FAILURE_VALUE))
+        delay(1500)
+        return try {
+            val list = notesDao.getAllNotes().first()
+            Result.success(list.size)
+        } catch (e: Throwable) {
+            Result.failure(Exception(FAILURE_VALUE, e))
+        }
     }
 
 }

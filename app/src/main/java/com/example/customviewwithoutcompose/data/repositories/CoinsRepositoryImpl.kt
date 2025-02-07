@@ -6,8 +6,10 @@ import com.example.customviewwithoutcompose.core.networking.safeApiCall
 import com.example.customviewwithoutcompose.core.networking.safeApiCallList
 import com.example.customviewwithoutcompose.core.networking.toDomain
 import com.example.customviewwithoutcompose.core.networking.toDomainList
+import com.example.customviewwithoutcompose.core.other.FAILURE_VALUE
 import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.core.other.roundTo
+import com.example.customviewwithoutcompose.data.local.datastore.CoinsDataStore
 import com.example.customviewwithoutcompose.data.local.room.CoinsDao
 import com.example.customviewwithoutcompose.data.local.room.CoinsDataBase
 import com.example.customviewwithoutcompose.data.local.room.entities.CoinDataBaseMapper.mapToLocalEntityList
@@ -20,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -29,6 +30,7 @@ class CoinsRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val dataBase: CoinsDataBase,
     private val coinsDao: CoinsDao,
+    private val dataStore: CoinsDataStore
 ) : CoinsRepository {
 
     override val coins: Flow<List<CoinRoomEntity>> = coinsDao.getAllCoins()
@@ -88,9 +90,12 @@ class CoinsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getHiddenCoinsCount(): Result<Int> {
-        delay(2000)
-        return Result.success(3)
-//        return Result.failure(Exception(FAILURE_VALUE))
+        return try {
+            val list = dataStore.getHidedCoinsIds()
+            Result.success(list.size)
+        } catch (e: Throwable) {
+            Result.failure(Exception(FAILURE_VALUE, e))
+        }
     }
 
     private suspend fun getDetailInfoByList(coins: List<CoinDomain>): List<CoinDomain> = coroutineScope {

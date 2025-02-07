@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.TAG
+import com.example.customviewwithoutcompose.data.local.datastore.CoinsDataStore
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
@@ -41,7 +42,8 @@ import kotlin.collections.map
 class MainActivityViewModel @Inject constructor(
     private val coinsRepository: CoinsRepository,
     private val notesRepository: NotesRepository,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val dataStore: CoinsDataStore
 ) : BaseViewModel() {
 
     private val noteList = MutableStateFlow<List<ModelForNoteCustomView>>(emptyList())
@@ -78,6 +80,24 @@ class MainActivityViewModel @Inject constructor(
         observeData()
     }
 
+    fun setHiddenCoinsToStorage() {
+        viewModelScope.launch {
+            dataStore.setHidedCoinsIds(hidedCoinItemIds.value)
+            Log.d(TAG, "onCleared: hidden items = ${hidedCoinItemIds.value}")
+        }
+    }
+
+
+    fun getHidedCoins() {
+        viewModelScope.launch {
+            val list = dataStore.getHidedCoinsIds()
+            Log.d(TAG, "getHidedCoins: list = $list")
+            hidedCoinItemIds.update {
+                list
+            }
+        }
+    }
+
     fun onCoinToggleExpanding(item: ModelForCoinsAdapter) {
         expandedCoinItemsIds.update {
             if (expandedCoinItemsIds.value.contains(item.customViewModel.id)) {
@@ -96,6 +116,7 @@ class MainActivityViewModel @Inject constructor(
                 it.minus(item.customViewModel.id)
             }
         }
+        setHiddenCoinsToStorage()
     }
 
     fun addNote(noteText: String) {

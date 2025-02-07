@@ -79,6 +79,11 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.getHidedCoins()
+    }
+
     private fun initBinding() {
         binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
