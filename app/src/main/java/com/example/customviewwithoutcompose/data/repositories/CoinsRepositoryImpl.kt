@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -87,8 +88,9 @@ class CoinsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getHiddenCoinsCount(): Result<Int> {
-//        return Result.success(3)
-        return Result.failure(Exception("-"))
+        delay(2000)
+        return Result.success(3)
+//        return Result.failure(Exception(FAILURE_VALUE))
     }
 
     private suspend fun getDetailInfoByList(coins: List<CoinDomain>): List<CoinDomain> = coroutineScope {

@@ -52,40 +52,40 @@ class SummaryActivity : AppCompatActivity() {
     private fun setObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.totalItemsCounts.collectLatest {
-                    binding.tvTotalItemsCount.text = getString(R.string.total_items_count, it)
+                viewModel.totalItemsCounts.collectLatest { state ->
+                    viewModel.setView(binding.tvTotalItemsCount, state, R.string.total_items_count)
                 }
             }
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.hiddenCoinsCounts.collectLatest {
-                    binding.tvHiddenCoinsCount.text = getString(R.string.hidden_coins_count, it)
+                viewModel.hiddenCoinsCounts.collectLatest { state ->
+                    viewModel.setView(binding.tvHiddenCoinsCount, state, R.string.hidden_coins_count)
                 }
             }
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.totalNotesCounts.collectLatest {
-                    binding.tvTotalNotesCount.text = getString(R.string.total_notes_count, it)
+                viewModel.totalNotesCounts.collectLatest { state ->
+                    viewModel.setView(binding.tvTotalNotesCount, state, R.string.total_notes_count)
                 }
             }
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.dayWithMostNotes.collectLatest {
-                    binding.tvDayWithMostNotes.text = getString(R.string.the_day_on_which_the_most_notes_were_taken, it)
+                viewModel.dayWithMostNotes.collectLatest { state ->
+                    viewModel.setView(binding.tvDayWithMostNotes, state, R.string.the_day_on_which_the_most_notes_were_taken)
                 }
             }
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.amountOfDaysAppUsing.collectLatest {
-                    binding.tvMemberFor.text = getString(R.string.member_for_days, it)
+                viewModel.amountOfDaysAppUsing.collectLatest { state ->
+                    viewModel.setView(binding.tvMemberFor, state, R.string.member_for_days)
                 }
             }
         }

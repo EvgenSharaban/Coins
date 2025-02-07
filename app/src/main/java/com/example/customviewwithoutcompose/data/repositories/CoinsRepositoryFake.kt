@@ -92,8 +92,9 @@ class CoinsRepositoryFake @Inject constructor(
     }
 
     override suspend fun getHiddenCoinsCount(): Result<Int> {
-//        return Result.success(3)
-        return Result.failure(Exception("-"))
+        delay(2000)
+        return Result.success(3)
+//        return Result.failure(Exception(FAILURE_VALUE))
     }
 
     private suspend fun insertCoinsToDB(list: List<CoinDomain>) {

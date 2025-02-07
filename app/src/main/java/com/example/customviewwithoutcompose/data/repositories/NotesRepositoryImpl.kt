@@ -3,6 +3,7 @@ package com.example.customviewwithoutcompose.data.repositories
 import com.example.customviewwithoutcompose.data.local.room.NotesDao
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -31,8 +32,9 @@ class NotesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTotalNotesCount(): Result<Int> {
-//        return Result.success(8)
-        return Result.failure(Exception("-"))
+        delay(3000)
+        return Result.success(8)
+//        return Result.failure(Exception(FAILURE_VALUE))
     }
 
 }

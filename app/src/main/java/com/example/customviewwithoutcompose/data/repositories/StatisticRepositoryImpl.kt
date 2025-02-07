@@ -7,14 +7,15 @@ import javax.inject.Inject
 class StatisticRepositoryImpl @Inject constructor() : StatisticRepository {
 
     override suspend fun getAmountOfDaysAppUsing(): Result<Int> {
-//        return Result.success(10)
-        return Result.failure(Exception("-"))
+        delay(3000)
+        return Result.success(10)
+//        return Result.failure(Exception(FAILURE_VALUE))
     }
 
     override suspend fun getTotalItemsCount(): Result<Int> {
         delay(1000)
-//        return Result.success(15)
-        return Result.failure(Exception("-"))
+        return Result.success(15)
+//        return Result.failure(Exception(FAILURE_VALUE))
     }
 
 }
