@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -24,6 +25,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginHorizontal="16dp"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -31,35 +33,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Member for 15 days" />
+                    tools:text="@string/member_for_days" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTotalItemsCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Total items count: " />
+                    tools:text="@string/total_items_count" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvHiddenCoinsCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Hidden coins count:" />
+                    tools:text="@string/hidden_coins_count" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTotalNotesCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Total notes count: " />
+                    tools:text="@string/total_notes_count" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvDayWithMostNotes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="The day on which the most notes were taken: " />
+                    tools:text="@string/the_day_on_which_the_most_notes_were_taken" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.core.widget.NestedScrollView>

@@ -12,4 +12,9 @@
     <string name="summary_statistics">Summary statistics</string>
     <string name="home">Home</string>
     <string name="summary">Summary</string>
+    <string name="total_items_count">Total items count: %1$s</string>
+    <string name="hidden_coins_count">Hidden coins count: %1$s</string>
+    <string name="total_notes_count">Total notes count: %1$s</string>
+    <string name="the_day_on_which_the_most_notes_were_taken">The day on which the most notes were taken: %1$s</string>
+    <string name="member_for_days">Member for %1$s days</string>
 </resources>

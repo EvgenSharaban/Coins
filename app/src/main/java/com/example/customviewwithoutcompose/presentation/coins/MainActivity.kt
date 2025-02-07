@@ -8,16 +8,20 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.RecyclerView
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.fromDpToPx
 import com.example.customviewwithoutcompose.core.other.updatePadding
@@ -41,6 +45,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainActivityViewModel by viewModels()
+    private lateinit var inset: Insets
+    private var isFabHidden = true
 
     private val coinsDelegateAdapter = CoinDelegateAdapter(::onItemCoinClicked)
     private val notesDelegateAdapter = NoteDelegateAdapter(::onNoteLongClicked)
@@ -88,13 +94,38 @@ class MainActivity : AppCompatActivity() {
             additionalBottomInset = resources.getDimensionPixelSize(R.dimen.bottom_margin_last)
         )
         ViewCompat.setOnApplyWindowInsetsListener(binding.bottomNavigationView) { view, insets ->
-            view.setPadding(0, 0, 0, 8.fromDpToPx(this)) // changed default bottom padding for bottomNavigationView
+            inset = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(0, 0, 0, inset.bottom) // changed default bottom padding for bottomNavigationView
             insets
         }
+        setFabMargins(false)
+        binding.rvCoins.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (dy > 0) { // scroll down
+                    setFabMargins(true)
+                } else if (dy < 0) { // scroll up
+                    setFabMargins(false)
+                }
+            }
+        })
+    }
+
+    private fun setFabMargins(isScrollDown: Boolean) {
+        if (isFabHidden == isScrollDown) return
+        isFabHidden = isScrollDown
         binding.fabAddNote.apply {
             val insetFab = 24.fromDpToPx(this@MainActivity).toFloat()
-            translationY = -insetFab
-            translationX = -insetFab
+            val additionalBottomInset = if (isScrollDown) inset.bottom else 0
+            val targetTransitionY = -insetFab - additionalBottomInset
+            val targetTransitionX = -insetFab
+            animate().cancel()
+            animate()
+                .translationY(targetTransitionY)
+                .translationX(targetTransitionX)
+                .setInterpolator(DecelerateInterpolator())
+                .start()
         }
     }
 

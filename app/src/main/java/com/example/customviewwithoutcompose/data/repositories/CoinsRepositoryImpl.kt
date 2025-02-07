@@ -86,12 +86,9 @@ class CoinsRepositoryImpl @Inject constructor(
         }.toDomain(CoinDomainMapper)
     }
 
-    override suspend fun getTotalCoinsCount(): Result<Int> {
-        return Result.success(15)
-    }
-
     override suspend fun getHiddenCoinsCount(): Result<Int> {
         return Result.success(3)
+        //        return Result.failure(Exception("-"))
     }
 
     private suspend fun getDetailInfoByList(coins: List<CoinDomain>): List<CoinDomain> = coroutineScope {

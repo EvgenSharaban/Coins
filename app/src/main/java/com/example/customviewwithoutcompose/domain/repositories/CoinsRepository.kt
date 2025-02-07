@@ -16,8 +16,6 @@ interface CoinsRepository {
 
     suspend fun getTickerById(id: String): Result<CoinDomain>
 
-    suspend fun getTotalCoinsCount(): Result<Int>
-
     suspend fun getHiddenCoinsCount(): Result<Int>
 
 }

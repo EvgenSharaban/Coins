@@ -23,7 +23,7 @@ fun View.updatePadding(
             )
 
             needUpdateTop -> view.updatePadding(top = insets.top + additionalTopInset)
-            needUpdateBottom -> view.updatePadding(bottom = additionalBottomInset)
+            needUpdateBottom -> view.updatePadding(bottom = insets.bottom + additionalBottomInset)
         }
         windowInsets
     }
