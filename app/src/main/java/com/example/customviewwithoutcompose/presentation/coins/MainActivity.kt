@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var inset: Insets
     private var isFabHidden = true
 
-    private val coinsDelegateAdapter = CoinDelegateAdapter(::onItemCoinClicked)
+    private val coinsDelegateAdapter = CoinDelegateAdapter(::onItemCoinClicked, ::onItemCoinLongClicked)
     private val notesDelegateAdapter = NoteDelegateAdapter(::onNoteLongClicked)
 
     private val compositeAdapter by lazy {
@@ -195,7 +195,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onItemCoinClicked(item: ModelForCoinsAdapter) {
-        viewModel.onItemToggle(item)
+        viewModel.onCoinToggleExpanding(item)
+    }
+
+    private fun onItemCoinLongClicked(item: ModelForCoinsAdapter) {
+        viewModel.onCoinToggleHiding(item)
     }
 
     private fun onNoteLongClicked(note: ModelForNoteCustomView) {

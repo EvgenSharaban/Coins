@@ -47,20 +47,24 @@ class MainActivityViewModel @Inject constructor(
     private val noteList = MutableStateFlow<List<ModelForNoteCustomView>>(emptyList())
     private val coinList = MutableStateFlow<List<ModelForCoinCustomView>>(emptyList())
     private val expandedCoinItemsIds = MutableStateFlow<Set<String>>(emptySet())
+    private val hidedCoinItemIds = MutableStateFlow<Set<String>>(emptySet())
 
     val recyclerItemsList: StateFlow<List<DelegateAdapterItem>> =
-        combine(noteList, coinList, expandedCoinItemsIds) { notes, coins, expandedIds ->
+        combine(noteList, coinList, expandedCoinItemsIds, hidedCoinItemIds) { notes, coins, expandedIds, hidedIds ->
             val noteItems = notes.map {
                 NoteItem(it)
             }
-            val coinItems = coins.map { coin ->
-                CoinItem(
-                    ModelForCoinsAdapter(
-                        customViewModel = coin,
-                        isExpanded = coin.id in expandedIds
+            val coinItems = coins
+                .filter { it.id !in hidedIds }
+                .map { coin ->
+                    CoinItem(
+                        ModelForCoinsAdapter(
+                            customViewModel = coin,
+                            isExpanded = coin.id in expandedIds,
+                            isHided = coin.id in hidedIds
+                        )
                     )
-                )
-            }
+                }
             Log.d(TAG, "notes items size = ${noteItems.size}")
             noteItems.plus(coinItems)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -74,12 +78,22 @@ class MainActivityViewModel @Inject constructor(
         observeData()
     }
 
-    fun onItemToggle(item: ModelForCoinsAdapter) {
+    fun onCoinToggleExpanding(item: ModelForCoinsAdapter) {
         expandedCoinItemsIds.update {
             if (expandedCoinItemsIds.value.contains(item.customViewModel.id)) {
                 it.minus(item.customViewModel.id)
             } else {
                 it.plus(item.customViewModel.id)
+            }
+        }
+    }
+
+    fun onCoinToggleHiding(item: ModelForCoinsAdapter) {
+        hidedCoinItemIds.update {
+            if (!hidedCoinItemIds.value.contains(item.customViewModel.id)) {
+                it.plus(item.customViewModel.id)
+            } else {
+                it.minus(item.customViewModel.id)
             }
         }
     }

@@ -13,13 +13,14 @@ import com.example.delegateadapter.DelegateAdapter
 import com.example.delegateadapter.DelegateAdapterItem
 
 class CoinDelegateAdapter(
-    private val onCoinClicked: (item: ModelForCoinsAdapter) -> Unit
+    private val onClicked: (item: ModelForCoinsAdapter) -> Unit,
+    private val onLongClicked: (item: ModelForCoinsAdapter) -> Unit
 ) : DelegateAdapter<CoinItem, CoinDelegateAdapter.CoinViewHolder>(CoinItem::class.java) {
 
     override fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.custom_view, parent, false)
-        return CoinViewHolder(CustomViewBinding.bind(view), onCoinClicked)
+        return CoinViewHolder(CustomViewBinding.bind(view), onClicked, onLongClicked)
     }
 
     override fun bindViewHolder(
@@ -37,19 +38,20 @@ class CoinDelegateAdapter(
     inner class CoinViewHolder(
         private val binding: CustomViewBinding,
         private val onClicked: (item: ModelForCoinsAdapter) -> Unit,
-
-        ) : RecyclerView.ViewHolder(binding.root) {
+        private val onLongClicked: (item: ModelForCoinsAdapter) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         private var localCoinItem: ModelForCoinsAdapter? = null
 
         init {
             itemView.setOnClickListener {
-                // if this not need - delete after checking
-//                val position = bindingAdapterPosition
-//                if (position != RecyclerView.NO_POSITION) {
                 val item = localCoinItem ?: return@setOnClickListener
                 onClicked(item)
-//                }
+            }
+            itemView.setOnLongClickListener {
+                val item = localCoinItem ?: return@setOnLongClickListener false
+                onLongClicked(item)
+                true
             }
         }
 
