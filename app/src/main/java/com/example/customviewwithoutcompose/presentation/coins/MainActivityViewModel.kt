@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.TAG
-import com.example.customviewwithoutcompose.data.local.datastore.CoinsDataStore
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
@@ -43,27 +42,23 @@ class MainActivityViewModel @Inject constructor(
     private val coinsRepository: CoinsRepository,
     private val notesRepository: NotesRepository,
     @ApplicationContext private val context: Context,
-    private val dataStore: CoinsDataStore
 ) : BaseViewModel() {
 
     private val noteList = MutableStateFlow<List<ModelForNoteCustomView>>(emptyList())
     private val coinList = MutableStateFlow<List<ModelForCoinCustomView>>(emptyList())
     private val expandedCoinItemsIds = MutableStateFlow<Set<String>>(emptySet())
-    private val hidedCoinItemIds = MutableStateFlow<Set<String>>(emptySet())
 
     val recyclerItemsList: StateFlow<List<DelegateAdapterItem>> =
-        combine(noteList, coinList, expandedCoinItemsIds, hidedCoinItemIds) { notes, coins, expandedIds, hidedIds ->
+        combine(noteList, coinList, expandedCoinItemsIds) { notes, coins, expandedIds ->
             val noteItems = notes.map {
                 NoteItem(it)
             }
             val coinItems = coins
-                .filter { it.id !in hidedIds }
                 .map { coin ->
                     CoinItem(
                         ModelForCoinsAdapter(
                             customViewModel = coin,
                             isExpanded = coin.id in expandedIds,
-                            isHided = coin.id in hidedIds
                         )
                     )
                 }
@@ -80,25 +75,21 @@ class MainActivityViewModel @Inject constructor(
         observeData()
     }
 
-    fun setHiddenCoinsToStorage() {
+    fun setHiddenCoinsToStorage(id: String) {
         viewModelScope.launch {
-            dataStore.setHidedCoinsIds(hidedCoinItemIds.value)
-            Log.d(TAG, "onCleared: hidden items = ${hidedCoinItemIds.value}")
+            coinsRepository.hideCoin(id)
         }
     }
 
 
     fun getHidedCoins() {
         viewModelScope.launch {
-            val list = dataStore.getHidedCoinsIds()
+            val list = coinsRepository.getHidedCoinsIds()
             Log.d(TAG, "getHidedCoins: list = $list")
-            hidedCoinItemIds.update {
-                list
-            }
         }
     }
 
-    fun onCoinToggleExpanding(item: ModelForCoinsAdapter) {
+    fun onItemCoinClicked(item: ModelForCoinsAdapter) {
         expandedCoinItemsIds.update {
             if (expandedCoinItemsIds.value.contains(item.customViewModel.id)) {
                 it.minus(item.customViewModel.id)
@@ -108,15 +99,8 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun onCoinToggleHiding(item: ModelForCoinsAdapter) {
-        hidedCoinItemIds.update {
-            if (!hidedCoinItemIds.value.contains(item.customViewModel.id)) {
-                it.plus(item.customViewModel.id)
-            } else {
-                it.minus(item.customViewModel.id)
-            }
-        }
-        setHiddenCoinsToStorage()
+    fun onItemCoinLongClicked(item: ModelForCoinsAdapter) {
+        setHiddenCoinsToStorage(item.customViewModel.id)
     }
 
     fun addNote(noteText: String) {
@@ -169,7 +153,7 @@ class MainActivityViewModel @Inject constructor(
             if (hasInternetConnection()) {
                 coinsRepository.fetchCoinsFullEntity()
                     .onFailure { error ->
-                        _event.send(Events.MessageForUser(error.message ?: "Unknown error"))
+                        _event.send(Events.MessageForUser(error.message ?: context.getString(R.string.unknown_error)))
                     }
             } else {
                 val message = context.getString(R.string.no_internet_connection)

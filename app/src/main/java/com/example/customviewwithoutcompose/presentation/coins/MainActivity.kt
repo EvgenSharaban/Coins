@@ -25,6 +25,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.fromDpToPx
+import com.example.customviewwithoutcompose.core.other.showSnackBar
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.databinding.DialogAddNoteBinding
@@ -32,12 +33,10 @@ import com.example.customviewwithoutcompose.databinding.DialogDeleteNoteBinding
 import com.example.customviewwithoutcompose.presentation.Events
 import com.example.customviewwithoutcompose.presentation.coins.adapters.coin.CoinDelegateAdapter
 import com.example.customviewwithoutcompose.presentation.coins.adapters.note.NoteDelegateAdapter
-import com.example.customviewwithoutcompose.presentation.coins.models.coin.ModelForCoinsAdapter
 import com.example.customviewwithoutcompose.presentation.coins.models.note.ModelForNoteCustomView
 import com.example.customviewwithoutcompose.presentation.coins.models.note.mappers.NoteUiModelMapper.mapToRoomModel
 import com.example.customviewwithoutcompose.presentation.summary.SummaryActivity
 import com.example.delegateadapter.CompositeAdapter
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -50,7 +49,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var inset: Insets
     private var isFabHidden = true
 
-    private val coinsDelegateAdapter = CoinDelegateAdapter(::onItemCoinClicked, ::onItemCoinLongClicked)
+    private val coinsDelegateAdapter = CoinDelegateAdapter(
+        onClicked = { item -> viewModel.onItemCoinClicked(item) },
+        onLongClicked = { item -> viewModel.onItemCoinLongClicked(item) }
+    )
+
     private val notesDelegateAdapter = NoteDelegateAdapter(::onNoteLongClicked)
 
     private val compositeAdapter by lazy {
@@ -152,7 +155,7 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.event.collectLatest { event ->
                     when (event) {
-                        is Events.MessageForUser -> showMessageForUser(event.message)
+                        is Events.MessageForUser -> showSnackBar(binding.root, event.message)
                         is Events.PositionToScrolling -> binding.rvCoins.scrollToPosition(event.position)
                     }
                 }
@@ -187,24 +190,6 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-    }
-
-    private fun showMessageForUser(message: String) {
-//        Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show()
-        val snackBar = Snackbar.make(this@MainActivity, binding.root, message, Snackbar.LENGTH_INDEFINITE)
-        snackBar.setTextMaxLines(5)
-        snackBar.setAction("Ok") {
-            snackBar.dismiss()
-        }
-        snackBar.show()
-    }
-
-    private fun onItemCoinClicked(item: ModelForCoinsAdapter) {
-        viewModel.onCoinToggleExpanding(item)
-    }
-
-    private fun onItemCoinLongClicked(item: ModelForCoinsAdapter) {
-        viewModel.onCoinToggleHiding(item)
     }
 
     private fun onNoteLongClicked(note: ModelForNoteCustomView) {

@@ -18,12 +18,11 @@ import com.example.customviewwithoutcompose.data.network.ApiService
 import com.example.customviewwithoutcompose.data.network.entities.mappers.CoinDomainMapper
 import com.example.customviewwithoutcompose.domain.models.CoinDomain
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class CoinsRepositoryImpl @Inject constructor(
@@ -33,31 +32,11 @@ class CoinsRepositoryImpl @Inject constructor(
     private val dataStore: CoinsDataStore
 ) : CoinsRepository {
 
-    override val coins: Flow<List<CoinRoomEntity>> = coinsDao.getAllCoins()
-
-//    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
-//        return safeApiCallList {
-//            apiService.getCoins()
-//        }
-//            .toDomainList(CoinDomainMapper)
-//            .mapCatching { coins ->
-//                Log.d(TAG, "getCoins: time start")
-//                val list = coins
-//                    .filter { it.rank > 0 && it.isActive && it.type == FILTERING_TYPE }
-//                    .sortedBy { it.rank }
-//                    .take(MAX_COUNT_ITEMS)
-//
-//                Log.d(TAG, "getCoins: time end")
-//                list
-//
-//            }
-//            .onSuccess { coins ->
-//                Log.d(TAG, "getCoins: success, size = ${coins.size}")
-//            }
-//            .onFailure { error ->
-//                Log.d(TAG, "getCoins(): failure, \nerror = $error")
-//            }
-//    }
+    private val allCoins: Flow<List<CoinRoomEntity>> = coinsDao.getAllCoins()
+    private val hiddenCoins: Flow<Set<String>> = dataStore.getHiddenCoinsFlow()
+    override val coins: Flow<List<CoinRoomEntity>> = combine(allCoins, hiddenCoins) { allCoins, hiddenCoinsIds ->
+        allCoins.filter { !hiddenCoinsIds.contains(it.id) }
+    }
 
     override suspend fun fetchCoinsFullEntity(): Result<Unit> {
         return safeApiCallList {
@@ -98,6 +77,15 @@ class CoinsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun hideCoin(id: String) {
+        dataStore.addHidedCoinId(id)
+        Log.d(TAG, "onCleared: hidden item = $id")
+    }
+
+    override suspend fun getHidedCoinsIds(): Set<String> {
+        return dataStore.getHidedCoinsIds()
+    }
+
     private suspend fun getDetailInfoByList(coins: List<CoinDomain>): List<CoinDomain> = coroutineScope {
         Log.d(TAG, "getCoins: time start")
         val list = coins
@@ -129,13 +117,11 @@ class CoinsRepositoryImpl @Inject constructor(
 
     private suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {
-            withContext(Dispatchers.IO) {
-                dataBase.withTransaction {
-                    coinsDao.deleteAllCoins()
-                    coinsDao.insertAllCoins(list.mapToLocalEntityList())
-                }
-                Log.d(TAG, "insertCoinsToDB: success")
+            dataBase.withTransaction {
+                coinsDao.deleteAllCoins()
+                coinsDao.insertAllCoins(list.mapToLocalEntityList())
             }
+            Log.d(TAG, "insertCoinsToDB: success")
         } catch (e: Throwable) {
             Log.d(TAG, "insertCoinsToDB: failed, \nerror = $e")
         }

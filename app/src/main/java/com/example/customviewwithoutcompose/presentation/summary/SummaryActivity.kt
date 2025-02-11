@@ -6,15 +6,21 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.customviewwithoutcompose.R
+import com.example.customviewwithoutcompose.core.other.FAILURE_VALUE
+import com.example.customviewwithoutcompose.core.other.showSnackBar
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivitySummaryBinding
+import com.example.customviewwithoutcompose.presentation.Events
 import com.example.customviewwithoutcompose.presentation.coins.MainActivity
+import com.example.customviewwithoutcompose.presentation.summary.SummaryActivityViewModel.SummaryState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,8 +58,19 @@ class SummaryActivity : AppCompatActivity() {
     private fun setObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.event.collectLatest { event ->
+                    when (event) {
+                        is Events.MessageForUser -> showSnackBar(binding.root, event.message)
+                        else -> {}
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.totalItemsCounts.collectLatest { state ->
-                    viewModel.setView(binding.tvTotalItemsCount, state, R.string.total_items_count)
+                    setView(binding.tvTotalItemsCount, state, R.string.total_items_count)
                 }
             }
         }
@@ -61,7 +78,7 @@ class SummaryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.hiddenCoinsCounts.collectLatest { state ->
-                    viewModel.setView(binding.tvHiddenCoinsCount, state, R.string.hidden_coins_count)
+                    setView(binding.tvHiddenCoinsCount, state, R.string.hidden_coins_count)
                 }
             }
         }
@@ -69,7 +86,7 @@ class SummaryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.totalNotesCounts.collectLatest { state ->
-                    viewModel.setView(binding.tvTotalNotesCount, state, R.string.total_notes_count)
+                    setView(binding.tvTotalNotesCount, state, R.string.total_notes_count)
                 }
             }
         }
@@ -77,7 +94,7 @@ class SummaryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.dayWithMostNotes.collectLatest { state ->
-                    viewModel.setView(binding.tvDayWithMostNotes, state, R.string.the_day_on_which_the_most_notes_were_taken)
+                    setView(binding.tvDayWithMostNotes, state, R.string.the_day_on_which_the_most_notes_were_taken)
                 }
             }
         }
@@ -85,7 +102,7 @@ class SummaryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.amountOfDaysAppUsing.collectLatest { state ->
-                    viewModel.setView(binding.tvMemberFor, state, R.string.member_for_days)
+                    setView(binding.tvMemberFor, state, R.string.member_for_days)
                 }
             }
         }
@@ -125,5 +142,27 @@ class SummaryActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
         val resetDefaultAnimation = ActivityOptions.makeCustomAnimation(this, 0, 0).toBundle()
         startActivity(intent, resetDefaultAnimation)
+    }
+
+    private fun setView(
+        view: AppCompatTextView,
+        state: SummaryState,
+        @StringRes resource: Int
+    ) {
+        when (state) {
+            is SummaryState.Default -> {
+                view.isVisible = false
+            }
+
+            is SummaryState.Loaded -> {
+                val string = if (state.value == FAILURE_VALUE) {
+                    getString(resource, state.value).substringBefore(state.value) + state.value
+                } else {
+                    getString(resource, state.value)
+                }
+                view.text = string
+                view.isVisible = true
+            }
+        }
     }
 }

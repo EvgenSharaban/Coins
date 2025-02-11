@@ -8,8 +8,6 @@ interface CoinsRepository {
 
     val coins: Flow<List<CoinRoomEntity>>
 
-//    suspend fun getCoinsShortEntity(): Result<List<CoinDomain>>
-
     suspend fun fetchCoinsFullEntity(): Result<Unit>
 
     suspend fun getCoinById(id: String): Result<CoinDomain>
@@ -17,5 +15,9 @@ interface CoinsRepository {
     suspend fun getTickerById(id: String): Result<CoinDomain>
 
     suspend fun getHiddenCoinsCount(): Result<Int>
+
+    suspend fun hideCoin(id: String)
+
+    suspend fun getHidedCoinsIds(): Set<String>
 
 }

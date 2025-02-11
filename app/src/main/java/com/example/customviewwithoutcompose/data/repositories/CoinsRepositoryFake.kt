@@ -18,7 +18,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class CoinsRepositoryFake @Inject constructor(
@@ -27,7 +27,11 @@ class CoinsRepositoryFake @Inject constructor(
     private val dataStore: CoinsDataStore
 ) : CoinsRepository {
 
-    override val coins: Flow<List<CoinRoomEntity>> = coinsDao.getAllCoins()
+    private val allCoins: Flow<List<CoinRoomEntity>> = coinsDao.getAllCoins()
+    private val hiddenCoins: Flow<Set<String>> = dataStore.getHiddenCoinsFlow()
+    override val coins: Flow<List<CoinRoomEntity>> = combine(allCoins, hiddenCoins) { allCoins, hiddenCoinsIds ->
+        allCoins.filter { !hiddenCoinsIds.contains(it.id) }
+    }
 
     private val fakeCoins = List(100) { index ->
         CoinDomain(
@@ -44,11 +48,6 @@ class CoinsRepositoryFake @Inject constructor(
             price = 2525.7
         )
     }
-
-    // if delete do it in repo and impl also
-//    override suspend fun getCoinsShortEntity(): Result<List<CoinDomain>> {
-//        return Result.success(fakeCoins)
-//    }
 
     override suspend fun fetchCoinsFullEntity(): Result<Unit> {
         return Result.success(fakeCoins)
@@ -96,6 +95,7 @@ class CoinsRepositoryFake @Inject constructor(
 
     override suspend fun getHiddenCoinsCount(): Result<Int> {
         return try {
+            delay(1000)
             val list = dataStore.getHidedCoinsIds()
             Result.success(list.size)
         } catch (e: Throwable) {
@@ -103,15 +103,22 @@ class CoinsRepositoryFake @Inject constructor(
         }
     }
 
+    override suspend fun hideCoin(id: String) {
+        dataStore.addHidedCoinId(id)
+        Log.d(TAG, "onCleared: hidden item = $id")
+    }
+
+    override suspend fun getHidedCoinsIds(): Set<String> {
+        return dataStore.getHidedCoinsIds()
+    }
+
     private suspend fun insertCoinsToDB(list: List<CoinDomain>) {
         try {
-            withContext(Dispatchers.IO) {
-                dataBase.withTransaction {
-                    coinsDao.deleteAllCoins()
-                    coinsDao.insertAllCoins(list.mapToLocalEntityList())
-                }
-                Log.d(TAG, "insertCoinsToDB: success")
+            dataBase.withTransaction {
+                coinsDao.deleteAllCoins()
+                coinsDao.insertAllCoins(list.mapToLocalEntityList())
             }
+            Log.d(TAG, "insertCoinsToDB: success")
         } catch (e: Throwable) {
             Log.d(TAG, "insertCoinsToDB: failed, \nerror = $e")
         }
