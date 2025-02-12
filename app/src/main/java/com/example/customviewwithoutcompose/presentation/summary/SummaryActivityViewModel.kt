@@ -10,6 +10,8 @@ import com.example.customviewwithoutcompose.domain.repositories.StatisticReposit
 import com.example.customviewwithoutcompose.domain.usecases.DayWithMostNotes
 import com.example.customviewwithoutcompose.presentation.Events
 import com.example.customviewwithoutcompose.presentation.base.BaseViewModel
+import com.example.customviewwithoutcompose.presentation.summary.utility.SummaryState
+import com.example.customviewwithoutcompose.presentation.summary.utility.SummaryUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -32,20 +34,8 @@ class SummaryActivityViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : BaseViewModel() {
 
-    private val _totalItemsCounts = MutableStateFlow<SummaryState>(SummaryState.Default())
-    val totalItemsCounts = _totalItemsCounts.asStateFlow()
-
-    private val _hiddenCoinsCounts = MutableStateFlow<SummaryState>(SummaryState.Default())
-    val hiddenCoinsCounts = _hiddenCoinsCounts.asStateFlow()
-
-    private val _totalNotesCounts = MutableStateFlow<SummaryState>(SummaryState.Default())
-    val totalNotesCounts = _totalNotesCounts.asStateFlow()
-
-    private val _dayWithMostNotes = MutableStateFlow<SummaryState>(SummaryState.Default())
-    val dayWithMostNotes = _dayWithMostNotes.asStateFlow()
-
-    private val _amountOfDaysAppUsing = MutableStateFlow<SummaryState>(SummaryState.Default())
-    val amountOfDaysAppUsing = _amountOfDaysAppUsing.asStateFlow()
+    private val _summaryUiState = MutableStateFlow<SummaryState>(SummaryState.Default())
+    val summaryUiState = _summaryUiState.asStateFlow()
 
     private val _event = Channel<Events>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
@@ -85,35 +75,17 @@ class SummaryActivityViewModel @Inject constructor(
             }
         }
 
-        _totalItemsCounts.update {
-            val string = totalItemsResult.getOrNull() ?: FAILURE_VALUE
-            SummaryState.Loaded(string.toString())
+        _summaryUiState.update {
+            SummaryState.Loaded(
+                SummaryUiState(
+                    totalItemsCounts = totalItemsResult.getOrNull()?.toString() ?: FAILURE_VALUE,
+                    hiddenCoinsCounts = hiddenCoinsResult.getOrNull()?.toString() ?: FAILURE_VALUE,
+                    totalNotesCounts = totalNotesResult.getOrNull()?.toString() ?: FAILURE_VALUE,
+                    dayWithMostNotes = dayWithMostNotesResult.getOrNull()?.toString() ?: FAILURE_VALUE,
+                    amountOfDaysAppUsing = amountOfDaysAppUsingResult.getOrNull()?.toString() ?: FAILURE_VALUE
+                )
+            )
         }
-
-        _hiddenCoinsCounts.update {
-            val string = hiddenCoinsResult.getOrNull() ?: FAILURE_VALUE
-            SummaryState.Loaded(string.toString())
-        }
-
-        _totalNotesCounts.update {
-            val string = totalNotesResult.getOrNull() ?: FAILURE_VALUE
-            SummaryState.Loaded(string.toString())
-        }
-
-        _dayWithMostNotes.update {
-            val string = dayWithMostNotesResult.getOrNull() ?: FAILURE_VALUE
-            SummaryState.Loaded(string.toString())
-        }
-
-        _amountOfDaysAppUsing.update {
-            val string = amountOfDaysAppUsingResult.getOrNull() ?: FAILURE_VALUE
-            SummaryState.Loaded(string.toString())
-        }
-    }
-
-    sealed interface SummaryState {
-        class Default : SummaryState
-        class Loaded(val value: String) : SummaryState
     }
 
 }
