@@ -1,9 +1,11 @@
 package com.example.customviewwithoutcompose.presentation.summary
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.FAILURE_VALUE
+import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
 import com.example.customviewwithoutcompose.domain.repositories.StatisticRepository
@@ -40,6 +42,8 @@ class SummaryActivityViewModel @Inject constructor(
     private val _event = Channel<Events>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
 
+    private var showingSnackBarBlocked = false
+
     init {
         viewModelScope.launch {
             setLoading(true)
@@ -49,31 +53,17 @@ class SummaryActivityViewModel @Inject constructor(
     }
 
     private suspend fun fetchAllData() = withContext(Dispatchers.IO) {
-        val totalItems = async { statisticRepository.getTotalItemsCount() }
-        val hiddenCoins = async { coinsRepository.getHiddenCoinsCount() }
-        val totalNotes = async { notesRepository.getTotalNotesCount() }
-        val dayWithMostNotes = async { dayWithMostNotesUseCase.getDayWithMostNotesCount() }
-        val amountOfDaysAppUsing = async { statisticRepository.getAmountOfDaysAppUsing() }
+        val totalItems = async { statisticRepository.getTotalItemsCount().doWithException() }
+        val hiddenCoins = async { coinsRepository.getHiddenCoinsCount().doWithException() }
+        val totalNotes = async { notesRepository.getTotalNotesCount().doWithException() }
+        val dayWithMostNotes = async { dayWithMostNotesUseCase.getDayWithMostNotesCount().doWithException() }
+        val amountOfDaysAppUsing = async { statisticRepository.getAmountOfDaysAppUsing().doWithException() }
 
         val totalItemsResult = totalItems.await()
         val hiddenCoinsResult = hiddenCoins.await()
         val totalNotesResult = totalNotes.await()
         val dayWithMostNotesResult = dayWithMostNotes.await()
         val amountOfDaysAppUsingResult = amountOfDaysAppUsing.await()
-
-        listOf(
-            totalItemsResult,
-            hiddenCoinsResult,
-            totalNotesResult,
-            dayWithMostNotesResult,
-            amountOfDaysAppUsingResult
-        ).forEach {
-            val exception = it.exceptionOrNull()
-            if (exception != null) {
-                _event.send(Events.MessageForUser(exception.message ?: context.getString(R.string.unknown_error)))
-                return@forEach
-            }
-        }
 
         _summaryUiState.update {
             SummaryState.Loaded(
@@ -86,6 +76,19 @@ class SummaryActivityViewModel @Inject constructor(
                 )
             )
         }
+
+        showingSnackBarBlocked = false
+    }
+
+    // for showing only first getting exception message
+    private suspend fun <T> Result<T>.doWithException(): Result<T> {
+        val exception = this.exceptionOrNull()
+        Log.d(TAG, "fetchAllData: result = $this, exception = $exception, showingSnackBarBlocked = $showingSnackBarBlocked")
+        if (exception != null && !showingSnackBarBlocked) {
+            showingSnackBarBlocked = true
+            _event.send(Events.MessageForUser(exception.message ?: context.getString(R.string.unknown_error)))
+        }
+        return this
     }
 
 }

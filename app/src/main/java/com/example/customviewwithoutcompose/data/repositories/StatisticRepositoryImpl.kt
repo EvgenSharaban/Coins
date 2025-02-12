@@ -12,15 +12,21 @@ class StatisticRepositoryImpl @Inject constructor(
 ) : StatisticRepository {
 
     override suspend fun getAmountOfDaysAppUsing(): Result<Int> {
-        delay(3000)
-        return Result.success(10)
-//        return Result.failure(Exception("gjhghgjhfjg"))
+        val delay = 3000L
+        delay(delay)
+//        return Result.success(10)
+        return fakeFailure(delay)
     }
 
     override suspend fun getTotalItemsCount(): Result<Int> {
-        delay(2000)
+        val delay = 2000L
+        delay(delay)
 //        return Result.success(15)
-        return Result.failure(Exception(context.getString(R.string.unknown_error)))
+        return fakeFailure(delay)
+    }
+
+    private fun <R> fakeFailure(delay: Long): Result<R> {
+        return Result.failure(Exception(context.getString(R.string.unknown_error) + ", delay = $delay"))
     }
 
 }
