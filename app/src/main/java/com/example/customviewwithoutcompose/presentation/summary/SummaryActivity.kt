@@ -19,8 +19,6 @@ import com.example.customviewwithoutcompose.core.other.showSnackBar
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivitySummaryBinding
 import com.example.customviewwithoutcompose.presentation.coins.MainActivity
-import com.example.customviewwithoutcompose.presentation.summary.utility.EventsSummary
-import com.example.customviewwithoutcompose.presentation.summary.utility.SummaryState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -69,13 +67,10 @@ class SummaryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.summaryUiState.collectLatest { state ->
-                    setViews(state)
+                    setViews(state.summaryState)
+                    binding.progressBar.isVisible = state.isLoading
                 }
             }
-        }
-
-        viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.isVisible = isLoading
         }
     }
 

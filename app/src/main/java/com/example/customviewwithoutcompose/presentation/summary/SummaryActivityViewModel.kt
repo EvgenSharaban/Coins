@@ -2,6 +2,7 @@ package com.example.customviewwithoutcompose.presentation.summary
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.customviewwithoutcompose.R
 import com.example.customviewwithoutcompose.core.other.FAILURE_VALUE
@@ -10,10 +11,7 @@ import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
 import com.example.customviewwithoutcompose.domain.repositories.StatisticRepository
 import com.example.customviewwithoutcompose.domain.usecases.DayWithMostNotes
-import com.example.customviewwithoutcompose.presentation.base.BaseViewModel
-import com.example.customviewwithoutcompose.presentation.summary.utility.EventsSummary
-import com.example.customviewwithoutcompose.presentation.summary.utility.SummaryState
-import com.example.customviewwithoutcompose.presentation.summary.utility.SummaryUiState
+import com.example.customviewwithoutcompose.presentation.summary.models.SummaryUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -34,10 +32,10 @@ class SummaryActivityViewModel @Inject constructor(
     private val statisticRepository: StatisticRepository,
     private val dayWithMostNotesUseCase: DayWithMostNotes,
     @ApplicationContext private val context: Context
-) : BaseViewModel() {
+) : ViewModel() {
 
-    private val _summaryUiState = MutableStateFlow<SummaryState>(SummaryState.Default())
-    val summaryUiState = _summaryUiState.asStateFlow()
+    private val _summaryScreenState = MutableStateFlow<SummaryScreenState>(SummaryScreenState.DEFAULT)
+    val summaryUiState = _summaryScreenState.asStateFlow()
 
     private val _event = Channel<EventsSummary>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
@@ -50,9 +48,9 @@ class SummaryActivityViewModel @Inject constructor(
 
     fun initFetchingData() {
         viewModelScope.launch {
-            setLoading(true)
+            _summaryScreenState.update { it.copy(isLoading = true) }
             fetchAllData()
-            setLoading(false)
+            _summaryScreenState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -69,14 +67,16 @@ class SummaryActivityViewModel @Inject constructor(
         val dayWithMostNotesResult = dayWithMostNotes.await()
         val amountOfDaysAppUsingResult = amountOfDaysAppUsing.await()
 
-        _summaryUiState.update {
-            SummaryState.Loaded(
-                SummaryUiState(
-                    totalItemsCounts = totalItemsResult.getOrNull()?.toString() ?: FAILURE_VALUE,
-                    hiddenCoinsCounts = hiddenCoinsResult.getOrNull()?.toString() ?: FAILURE_VALUE,
-                    totalNotesCounts = totalNotesResult.getOrNull()?.toString() ?: FAILURE_VALUE,
-                    dayWithMostNotes = dayWithMostNotesResult.getOrNull()?.toString() ?: FAILURE_VALUE,
-                    amountOfDaysAppUsing = amountOfDaysAppUsingResult.getOrNull()?.toString() ?: FAILURE_VALUE
+        _summaryScreenState.update {
+            it.copy(
+                summaryState = SummaryState.Loaded(
+                    SummaryUi(
+                        totalItemsCounts = totalItemsResult.getOrNull()?.toString() ?: FAILURE_VALUE,
+                        hiddenCoinsCounts = hiddenCoinsResult.getOrNull()?.toString() ?: FAILURE_VALUE,
+                        totalNotesCounts = totalNotesResult.getOrNull()?.toString() ?: FAILURE_VALUE,
+                        dayWithMostNotes = dayWithMostNotesResult.getOrNull()?.toString() ?: FAILURE_VALUE,
+                        amountOfDaysAppUsing = amountOfDaysAppUsingResult.getOrNull()?.toString() ?: FAILURE_VALUE
+                    )
                 )
             )
         }

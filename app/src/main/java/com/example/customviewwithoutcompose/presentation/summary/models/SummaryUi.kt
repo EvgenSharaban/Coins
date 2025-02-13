@@ -1,6 +1,6 @@
-package com.example.customviewwithoutcompose.presentation.summary.utility
+package com.example.customviewwithoutcompose.presentation.summary.models
 
-data class SummaryUiState(
+data class SummaryUi(
     val totalItemsCounts: String,
     val hiddenCoinsCounts: String,
     val totalNotesCounts: String,

@@ -1,4 +1,4 @@
-package com.example.customviewwithoutcompose.presentation.summary.utility
+package com.example.customviewwithoutcompose.presentation.summary
 
 
 sealed interface EventsSummary {
