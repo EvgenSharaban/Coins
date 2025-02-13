@@ -10,8 +10,8 @@ import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
 import com.example.customviewwithoutcompose.domain.repositories.StatisticRepository
 import com.example.customviewwithoutcompose.domain.usecases.DayWithMostNotes
-import com.example.customviewwithoutcompose.presentation.Events
 import com.example.customviewwithoutcompose.presentation.base.BaseViewModel
+import com.example.customviewwithoutcompose.presentation.summary.utility.EventsSummary
 import com.example.customviewwithoutcompose.presentation.summary.utility.SummaryState
 import com.example.customviewwithoutcompose.presentation.summary.utility.SummaryUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,12 +39,16 @@ class SummaryActivityViewModel @Inject constructor(
     private val _summaryUiState = MutableStateFlow<SummaryState>(SummaryState.Default())
     val summaryUiState = _summaryUiState.asStateFlow()
 
-    private val _event = Channel<Events>(Channel.BUFFERED)
+    private val _event = Channel<EventsSummary>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
 
     private var showingSnackBarBlocked = false
 
     init {
+        initFetchingData()
+    }
+
+    fun initFetchingData() {
         viewModelScope.launch {
             setLoading(true)
             fetchAllData()
@@ -86,7 +90,7 @@ class SummaryActivityViewModel @Inject constructor(
         Log.d(TAG, "fetchAllData: result = $this, exception = $exception, showingSnackBarBlocked = $showingSnackBarBlocked")
         if (exception != null && !showingSnackBarBlocked) {
             showingSnackBarBlocked = true
-            _event.send(Events.MessageForUser(exception.message ?: context.getString(R.string.unknown_error)))
+            _event.send(EventsSummary.MessageForUser(exception.message ?: context.getString(R.string.unknown_error)))
         }
         return this
     }

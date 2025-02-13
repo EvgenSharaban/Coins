@@ -11,7 +11,6 @@ import com.example.customviewwithoutcompose.core.other.TAG
 import com.example.customviewwithoutcompose.data.local.room.entities.NoteRoomEntity
 import com.example.customviewwithoutcompose.domain.repositories.CoinsRepository
 import com.example.customviewwithoutcompose.domain.repositories.NotesRepository
-import com.example.customviewwithoutcompose.presentation.Events
 import com.example.customviewwithoutcompose.presentation.base.BaseViewModel
 import com.example.customviewwithoutcompose.presentation.coins.adapters.coin.CoinItem
 import com.example.customviewwithoutcompose.presentation.coins.adapters.note.NoteItem
@@ -66,7 +65,7 @@ class MainActivityViewModel @Inject constructor(
             noteItems.plus(coinItems)
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _event = Channel<Events>(Channel.BUFFERED)
+    private val _event = Channel<EventsCoins>(Channel.BUFFERED)
     val event = _event.receiveAsFlow()
 
     init {
@@ -153,11 +152,11 @@ class MainActivityViewModel @Inject constructor(
             if (hasInternetConnection()) {
                 coinsRepository.fetchCoinsFullEntity()
                     .onFailure { error ->
-                        _event.send(Events.MessageForUser(error.message ?: context.getString(R.string.unknown_error)))
+                        _event.send(EventsCoins.MessageForUser(error.message ?: context.getString(R.string.unknown_error)))
                     }
             } else {
                 val message = context.getString(R.string.no_internet_connection)
-                _event.send(Events.MessageForUser(message))
+                _event.send(EventsCoins.MessageForUser(message))
                 Log.d(TAG, message)
             }
             setLoading(false)
@@ -178,7 +177,7 @@ class MainActivityViewModel @Inject constructor(
         val position = if (noteList.value.isNotEmpty()) {
             noteList.value.size - 1
         } else 0
-        _event.send(Events.PositionToScrolling(position))
+        _event.send(EventsCoins.PositionToScrolling(position))
     }
 
 }

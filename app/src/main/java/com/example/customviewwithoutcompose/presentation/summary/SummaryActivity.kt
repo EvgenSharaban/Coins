@@ -18,8 +18,8 @@ import com.example.customviewwithoutcompose.core.other.FAILURE_VALUE
 import com.example.customviewwithoutcompose.core.other.showSnackBar
 import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivitySummaryBinding
-import com.example.customviewwithoutcompose.presentation.Events
 import com.example.customviewwithoutcompose.presentation.coins.MainActivity
+import com.example.customviewwithoutcompose.presentation.summary.utility.EventsSummary
 import com.example.customviewwithoutcompose.presentation.summary.utility.SummaryState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -60,8 +60,7 @@ class SummaryActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.event.collectLatest { event ->
                     when (event) {
-                        is Events.MessageForUser -> showSnackBar(binding.root, event.message)
-                        else -> {}
+                        is EventsSummary.MessageForUser -> showSnackBar(binding.root, event.message)
                     }
                 }
             }

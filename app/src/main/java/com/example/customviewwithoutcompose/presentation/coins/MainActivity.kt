@@ -30,7 +30,6 @@ import com.example.customviewwithoutcompose.core.other.updatePadding
 import com.example.customviewwithoutcompose.databinding.ActivityMainBinding
 import com.example.customviewwithoutcompose.databinding.DialogAddNoteBinding
 import com.example.customviewwithoutcompose.databinding.DialogDeleteNoteBinding
-import com.example.customviewwithoutcompose.presentation.Events
 import com.example.customviewwithoutcompose.presentation.coins.adapters.coin.CoinDelegateAdapter
 import com.example.customviewwithoutcompose.presentation.coins.adapters.note.NoteDelegateAdapter
 import com.example.customviewwithoutcompose.presentation.coins.models.note.ModelForNoteCustomView
@@ -155,8 +154,8 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.event.collectLatest { event ->
                     when (event) {
-                        is Events.MessageForUser -> showSnackBar(binding.root, event.message)
-                        is Events.PositionToScrolling -> binding.rvCoins.scrollToPosition(event.position)
+                        is EventsCoins.MessageForUser -> showSnackBar(binding.root, event.message)
+                        is EventsCoins.PositionToScrolling -> binding.rvCoins.scrollToPosition(event.position)
                     }
                 }
             }
